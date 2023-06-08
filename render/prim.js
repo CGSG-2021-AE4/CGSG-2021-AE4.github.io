@@ -11,6 +11,8 @@ export class Prim {
     mtlName;
 
     drawType;
+
+    tex;
     
     constructor( rnd, newShader, topology, newMtlName ) {
         this.shader = newShader;
@@ -91,12 +93,13 @@ export class Prim {
         camera.updateUbo(rnd, this.shader);
         //this.mtl.apply(gl, this.shader);
 
-        Material.applyFromLib(rnd, this.shader, this.mtlName);
-
+        
         rnd.gl.clearColor(1, 0.6, 0.8, 1);
         rnd.gl.bindVertexArray(this.primVAO);
         rnd.gl.useProgram(this.shader.program);
         
+        // Apply texture 
+        Material.applyFromLib(rnd, this.shader, this.mtlName);
         // matrs world
  
         rnd.gl.uniformMatrix4fv(rnd.gl.getUniformLocation(this.shader.program, "matrWP"), true, matrWP.M);
@@ -162,21 +165,25 @@ export class Model {
 
             var pA = [];
             var nA = [];
+            var tA = [];
+
             var iA = [];
             var vA = [];
-            var pCounter = 1, nCounter = 1, iCounter = 0, vCounter = 0;
+            var pCounter = 1, nCounter = 1, tCounter = 1, iCounter = 0, vCounter = 0;
             var curPrimName = null;
             var useMtl = 'def';
 
             lines.forEach((elem)=>{
                 elem = elem.replace('\r', '');
                 var words = elem.split(' ');
-                if (words[0] == 'g' || words[0] == 'o')
+                switch (words[0])
                 {
+                case 'g':
+                case 'o': // Create new prim
                     if (curPrimName != null)
                     {
                         this.addPrim(curPrimName, new Prim(rnd.gl, newShader, new Topology(vA, iA, 1), useMtl));
-                    }// Submit prim
+                    } // Submit prim
                     iA = [];
                     vA = [];
                     iCounter = 0, vCounter = 0;
@@ -184,41 +191,52 @@ export class Model {
                     if (words.length === 3)
                         curPrimName = words[1] + "/" + words[2];
                     else
-                        curPrimName = words[1];
-                }
-                if (words[0] == 'v')
+                        curPrimName = words[1];    
+                    break;
+                case 'v': // Position
                     if (words.length == 5)
                         pA[pCounter++] = [parseFloat(words[1]), parseFloat(words[2]), parseFloat(words[3]), parseFloat(words[4])];
                     else
-                        pA[pCounter++] = [parseFloat(words[1]), parseFloat(words[2]), parseFloat(words[3]), 1];    
-                else if (words[0] == 'vn')
+                        pA[pCounter++] = [parseFloat(words[1]), parseFloat(words[2]), parseFloat(words[3]), 1];
+                    break;
+                case 'vn': // Normal
                     if (words.length == 5)
                         nA[nCounter++] = [parseFloat(words[1]), parseFloat(words[2]), parseFloat(words[3]), parseFloat(words[4])];
                     else
-                        nA[nCounter++] = [parseFloat(words[1]), parseFloat(words[2]), parseFloat(words[3]), 1];    
-                else if (words[0] == 'f')
-                {
+                        nA[nCounter++] = [parseFloat(words[1]), parseFloat(words[2]), parseFloat(words[3]), 1];
+                    break;
+                case 'vt': // Texture
+                    tA[tCounter++] = [parseFloat(words[1]), parseFloat(words[2])];
+                    break;
+                case 'f': // Indexes
+                    var getV = ( inds )=>{
+                        if (vi[1] != '')
+                            return pA[vi[0]].concat(nA[vi[2]]).concat(tA[vi[1]]);
+                        else
+                            return pA[vi[0]].concat(nA[vi[2]]).concat([0, 0]);
+                    };
                     var vi = words[1].split('/');
-                    vA[vCounter] = pA[vi[0]].concat(nA[vi[2]]).concat([0, 0]);
+                    vA[vCounter] = getV(vi);
                     iA[vCounter] = vCounter++;
 
                     vi = words[2].split('/');
-                    vA[vCounter] = pA[vi[0]].concat(nA[vi[2]]).concat([0, 0]);
+                    vA[vCounter] = getV(vi);
                     iA[vCounter] = vCounter++;
 
                     vi = words[3].split('/');
-                    vA[vCounter] = pA[vi[0]].concat(nA[vi[2]]).concat(0, 0);
+                    vA[vCounter] = getV(vi);
                     iA[vCounter] = vCounter++;
-                }
-                else if (words[0] === 'mtllib')
-                {
+                    break;
+                case 'mtllib': // Load material lib
                     if (mtlsPromise != null)
                         mtlsPromise = new Promise.all([mtlsPromise, this.loadMtls(rnd, words[1])]);
                     else
                         mtlsPromise = Material.loadMtls(rnd, words[1]);
-                }
-                else if (words[0] === 'usemtl')
+                    break;
+                case 'usemtl': // Use material
                     useMtl = words[1];
+                    break;
+                }
             });
             if (curPrimName != null)
             {

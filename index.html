@@ -3,9 +3,16 @@
         <meta charset = "UTF_8"/>
         <title>CGSG</title>
         <link rel="stylesheet" href="./css/style.css"/>
-        <!--<script type="text/javascript" src="./ui.js"></script>-->
+        <!--<script type="text/javascript" src="./ui.js"></script>--
+        <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
+        <script src='./node_modules/pngjs/lib/png.js'> // Libs imports
+            //import { PNG } from ;
+        </script>-->
     </head>
     <body>
+        <div class="support">
+            <img id="imageLoader" src="./models/default_tex.png"></img>
+        </div>
         <div class="header">
             <div class="title">
                 <canvas id="logoCanvas" width=200 height=100></canvas>
@@ -13,8 +20,13 @@
             </div>
             <script type="module">               // Logo render
                 import {vec3, matr} from "./math.js";
+                //import * as PNG from "./node_modules/pngjs/browser.js";
+                //import pngjs from "./package.json";
+                //import * as PNG from 'pngjs';
                 
                 import * as render from "./render/render.js";
+
+                //var PNG = require("pngjs");
     
                 var rnd = new render.Render("logoCanvas");
     
@@ -105,8 +117,9 @@
                 var cgsgText = new render.Model(rnd, shader, render.Topology.createCube());
     
                 await cgsgTor.load(rnd, shader, "./models/cgsg_tor2.obj");
-                await cgsgTor.load(rnd, shader, "./models/cow.obj");
-                await cgsgText.load(rnd, shader, "./models/cgsg_text.obj");
+                //await cgsgTor.load(rnd, shader, "./models/cow.obj");
+                //await cgsgText.load(rnd, shader, "./models/cgsg_text.obj");
+                await cgsgText.load(rnd, shader, "./models/tex_cube2.obj");
     
                 //cgsgTor.prims.forEach((elem)=>{
                 //    elem.drawType = rnd.gl.LINE_STRIP;

@@ -3,9 +3,12 @@ precision highp float;
 
 in vec4 v_pos;
 in vec4 v_normal;
-in vec4 v_tex;
+in vec2 v_tex;
 
 out vec4 o_color;
+
+uniform sampler2D texSampler;
+uniform bool isTexture;
 
 uniform camera {
     vec4 CamLoc;
@@ -70,11 +73,20 @@ vec3 Shade( vec3 P, vec3 N, vec3 C )
 }
 
 void main() {
-    //o_color = vec4(a, 0.2, 1, 1); 
-    //o_color = vec4(Shade(v_pos.xyz, v_normal.xyz, a.xyz), a.w);//CamAt;
+    // o_color = vec4(a, 0.2, 1, 1); 
+    // o_color = vec4(Shade(v_pos.xyz, v_normal.xyz, a.xyz), a.w);//CamAt;
 
-    o_color = vec4(Shade(v_pos.xyz, v_normal.xyz, Ka.xyz), Ka.w);//CamAt;
-    o_color += a;
-    //o_color = vec4(1, 0, 1, 1);
-    //o_color = CamLoc;
+    o_color = vec4(1.0, 0.0, 1.0, 1.0);
+    if (a.w < 0.3)
+        o_color = vec4(Shade(v_pos.xyz, v_normal.xyz, Ka.xyz), Ka.w);//CamAt;
+    else if (a.w < 0.7)
+        o_color = a;
+    else
+        if (isTexture)
+            o_color = texture(texSampler, v_tex);
+        else
+            o_color = vec4(1.0, 0.0, 0.0, 1.0);
+
+    // o_color = vec4(1, 0, 1, 1);
+    // o_color = CamLoc;
 }

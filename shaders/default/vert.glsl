@@ -2,11 +2,11 @@
 
 in vec4 in_pos;
 in vec4 in_norm;
-in vec4 in_tex;
+in vec2 in_tex;
 
 out vec4 v_pos;
 out vec4 v_normal;
-out vec4 v_tex;
+out vec2 v_tex;
 
 uniform mat4 matrWP;
 uniform mat4 matrVP;

@@ -1,3 +1,5 @@
+import {Texture} from "./texture.js";
+
 /* Bindings
 0 - material
 1 - camera
@@ -44,6 +46,7 @@ export class Material {
     Ks;
     Ph;
     Trans;
+    tex;
 
     constructorEmpty() {
         this.Ka = [0.05, 0.1, 0.2, 1];
@@ -53,12 +56,13 @@ export class Material {
         this.Trans = 1;
     }
 
-    constructorWithParams( newKa, newKd, newKs, newPh, newTrans ) {
+    constructorWithParams( newKa, newKd, newKs, newPh, newTrans, newTex ) {
         this.Ka = newKa;
         this.Kd = newKd;
         this.Ks = newKs;
         this.Ph = newPh;
         this.Trans = newTrans;
+        this.tex = newTex;
     }
     
     constructor( rnd, ...args ) {
@@ -69,10 +73,13 @@ export class Material {
         case 0:
             this.constructorEmpty();
             break;
-        case 5:
-            this.constructorWithParams(args[0], args[1], args[2], args[3], args[4]);
+        case 6:
+            this.constructorWithParams(args[0], args[1], args[2], args[3], args[4], args[5]);
             break;
+        case 5:
+            this.constructorWithParams(args[0], args[1], args[2], args[3], args[4], undefined);
         }
+
     }
     
     getMtlArray() {
@@ -81,9 +88,18 @@ export class Material {
     
     apply( rnd, shader )
     {
+        // Material ubo
         this.ubo.bind(rnd, shader, "mtl");
-        
         this.ubo.submit(rnd, this.getMtlArray());
+
+        // Texturies
+        if (this.tex != undefined)
+        {
+            rnd.gl.uniform1i(rnd.gl.getUniformLocation(shader.program, "isTexture"), 1);
+            this.tex.apply(rnd, shader);
+        }
+        else
+            rnd.gl.uniform1i(rnd.gl.getUniformLocation(shader.program, "isTexture"), 0);
     }
 
     static addToMtlLib( rnd, name, mtl ) {
@@ -108,7 +124,8 @@ export class Material {
                 Kd = [0.87, 0, 0.87],
                 Ks = [0.87, 0, 0.87],
                 Ph = 1,
-                Trans = 1;
+                Trans = 1,
+                tex;
 
             lines.forEach((line)=>{
                 line = line.replace('\r', '');
@@ -121,9 +138,10 @@ export class Material {
                     case 'newmtl':
                         if (curMtlName != null)
                         {
-                            outMtls[curMtlName] = new Material(rnd, Ka, Kd, Ks, Ph, Trans); // Submit mtl
+                            outMtls[curMtlName] = new Material(rnd, Ka, Kd, Ks, Ph, Trans, tex); // Submit mtl
                         }
                         curMtlName = words[1];
+                        tex = undefined;
                         break;
                     case 'Ka':
                         Ka = [parseFloat(words[1]), parseFloat(words[2]), parseFloat(words[3]), 1];
@@ -134,11 +152,25 @@ export class Material {
                     case 'Ks':
                         Ks = [parseFloat(words[1]), parseFloat(words[2]), parseFloat(words[3])];
                         break;
+                    case 'map_Kd':
+                        //tex = new Texture(rnd, 4, 4, [
+                        //    //192, 128, 192, 128,
+                        //    //128, 192, 128, 192,
+                        //    //192, 128, 192, 128,
+                        //    //128, 192, 128, 192,
+                        //    255, 0, 255, 255, 0, 0, 0, 255, 255, 0, 255, 255, 0, 0, 0, 255,
+                        //    255, 0, 255, 255, 0, 0, 0, 255, 255, 0, 255, 255, 0, 0, 0, 255,
+                        //    255, 0, 255, 255, 0, 0, 0, 255, 255, 0, 255, 255, 0, 0, 0, 255,
+                        //    255, 0, 255, 255, 0, 0, 0, 255, 255, 0, 255, 255, 0, 0, 0, 255,
+                        //]);
+
+                        tex = new Texture(rnd, words[1]);
+                        break;
                     }
                 
             });
             if (curMtlName != null)
-                outMtls[curMtlName] = new Material(rnd, Ka, Kd, Ks, Ph, Trans); // Submit mtl
+                outMtls[curMtlName] = new Material(rnd, Ka, Kd, Ks, Ph, Trans, tex); // Submit mtl
 
             for (var elem in outMtls)
                 this.addToMtlLib(rnd, elem, outMtls[elem]);

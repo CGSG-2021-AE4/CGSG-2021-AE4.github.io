@@ -1,12 +1,16 @@
 @import "./theme.css";
 @import "./fonts.css";
 
+/* Support */
+.support {
+    display: none;
+}
+
 /* Body */
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
     font-family: "IBMPlexMono";
-
 }
 
 /* Text */
@@ -58,6 +62,7 @@ div.header {
     border-radius: 1em;
     padding: 0.1em;
 }
+
 div.title {
     display: flex;
 }
@@ -68,7 +73,7 @@ div.article {
     padding: 0.5em;
     /*width: 30%;                                           /* TEEEEEEEEEEEEEEEMP */
     
-    -webkit-user-select: none;
+    /*-webkit-user-select: none;*/
 }
 
 div.section {
