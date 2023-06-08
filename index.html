@@ -28,47 +28,52 @@
 
                 //var PNG = require("pngjs");
     
-                var rnd = new render.Render("logoCanvas");
+                var logo_rnd = new render.Render("logoCanvas");
+                
+                var logo_defCamPos = new vec3(0.4374, 0.827, 3.30);
     
-                var scale = 0.5;
-    
-                var camera = new render.Camera(document.getElementById("logoCanvas"), rnd,
-                                new vec3(0.4374, 0.827, 3.30), new vec3(0.4, -0.1, 0), new vec3(0, 1, 0),
-                                render.Camera.createDefMatrProj(parseFloat(rnd.W), parseFloat(rnd.H)), 1);
-    
-                var top = render.Topology.setByPosArrayAndColor([-scale, -scale, 0, 1,
-                                                                   scale, -scale, 0, 1,
-                                                                  scale, scale, 0, 1,
-                                                                 -scale, -scale, 0, 1,
-                                                                 -scale, scale, 0, 1,
-                                                                 scale, scale, 0, 1], [0, 1, 2, 3, 4, 5]);
+                var logo_camera = new render.Camera(logo_rnd,
+                logo_defCamPos, new vec3(0.4, -0.1, 0), new vec3(0, 1, 0),
+                                render.Camera.createDefMatrProj(parseFloat(logo_rnd.W), parseFloat(logo_rnd.H)), 0);
     
                 // Shader
-                var shader = new render.Shader();
+                var logo_shader = new render.Shader();
                 
-                await shader.loadShader(rnd, 'logo');
+                await logo_shader.loadShader(logo_rnd, 'logo');
                 
                 // Topology
     
-                var cgsgTor = new render.Model(rnd, shader, render.Topology.createCube());
-                var cgsgText = new render.Model(rnd, shader, render.Topology.createCube());
+                var logo_cgsgTor = new render.Model(logo_rnd, logo_shader, render.Topology.createCube());
+                var logo_cgsgText = new render.Model(logo_rnd, logo_shader, render.Topology.createCube());
     
-                await cgsgTor.load(rnd, shader, "./models/cgsg_tor.obj");
-                await cgsgText.load(rnd, shader, "./models/cgsg_text.obj");
+                await logo_cgsgTor.load(logo_rnd, logo_shader, "./models/cgsg_tor.obj");
+                await logo_cgsgText.load(logo_rnd, logo_shader, "./models/cgsg_text.obj");
 
-                cgsgTor.prims.forEach((elem)=>{
-                    elem.drawType = rnd.gl.LINE_STRIP;
+                logo_cgsgTor.prims.forEach((elem)=>{
+                    elem.drawType = logo_rnd.gl.LINE_STRIP;
                 });
+
+                var cameraTargetPos = logo_defCamPos;
+
+                window.onmousemove = (e)=>{
+
+                    var delta = new vec3(-e.x + logo_rnd.canvas.offsetLeft + logo_rnd.canvas.offsetWidth / 2, e.y - logo_rnd.canvas.offsetTop - logo_rnd.canvas.offsetHeight / 2, 0);
+
+                    if (delta.length() != 0)
+                        cameraTargetPos = logo_defCamPos.add(delta.normalise());
+                };
     
-                var TmpCounter = 0;
+                var logo_TmpCounter = 0;
     
                 // UBO
-                window.setInterval(()=>{
-                    cgsgTor.draw(rnd, camera, matr.rotateY(0.007 * TmpCounter).mul(matr.rotateX(-3.14 / 4)));
-                    cgsgTor.draw(rnd, camera, matr.rotateY(0.007 * TmpCounter).mul(matr.rotateX(3.14 / 4)).mul(matr.translate(new vec3(1, 0, 0))));
+                window.setInterval((e)=>{
+                    logo_camera.pos = logo_camera.pos.add(cameraTargetPos.sub(logo_camera.pos).mulNum(0.1));
+                    logo_camera.update();
+                    logo_cgsgTor.draw(logo_rnd, logo_camera, matr.rotateY(0.007 * logo_TmpCounter).mul(matr.rotateX(-3.14 / 4)));
+                    logo_cgsgTor.draw(logo_rnd, logo_camera, matr.rotateY(0.007 * logo_TmpCounter).mul(matr.rotateX(3.14 / 4)).mul(matr.translate(new vec3(1, 0, 0))));
     
-                    cgsgText.draw(rnd, camera, matr.rotateX(3.14 / 2).mul(matr.translate(new vec3(0.5, 0, 1))));
-                    TmpCounter++;
+                    logo_cgsgText.draw(logo_rnd, logo_camera, matr.rotateX(3.14 / 2).mul(matr.translate(new vec3(0.5, 0, 1))));
+                    logo_TmpCounter++;
                 }, 10);
               </script>
             <p class="description">Now this site has only one project.
@@ -92,7 +97,7 @@
     
                 var scale = 0.5;
     
-                var camera = new render.Camera(document.getElementById("canvas"), rnd,
+                var camera = new render.Camera(rnd,
                                 new vec3(10, 10, 10), new vec3(0, 0, 0), new vec3(0, 1, 0),
                                 render.Camera.createDefMatrProj(parseFloat(rnd.W), parseFloat(rnd.H)), 1);
     

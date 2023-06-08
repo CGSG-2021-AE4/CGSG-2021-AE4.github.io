@@ -17,8 +17,7 @@ export class Camera {
     matrVP;
     ubo;
     
-    constructor( canvasObj, rnd, newPos, newAt, newUp, newMatrProj, enableMovement ) {
-
+    constructor( rnd, newPos, newAt, newUp, newMatrProj, enableMovement ) {
         this.matrProj = newMatrProj;
         this.pos = newPos;
         this.at = newAt;
@@ -28,9 +27,9 @@ export class Camera {
         // Making callbacks
         if (enableMovement)
         {
-            canvasObj.onmousemove = (e)=>{this.onMouseMove(e)};
-            canvasObj.onwheel = (e)=>{this.onMouseWheel(e)};
-            canvasObj.oncontextmenu = ()=>{return false;};
+            rnd.canvas.onmousemove = (e)=>{this.onMouseMove(e)};
+            rnd.canvas.onwheel = (e)=>{this.onMouseWheel(e)};
+            rnd.canvas.oncontextmenu = ()=>{return false;};
         }
         
         // Ubo init
@@ -137,6 +136,7 @@ export class ShaderSlider4 {
 }
 
 export class Render {
+    canvas;
     gl;
     W;
     H;
@@ -147,10 +147,10 @@ export class Render {
 
         console.log("InitGL...");
 
-        const canvas = document.getElementById(canvasName);
-        this.gl = canvas.getContext("webgl2");
-        this.W = canvas.getAttribute("width");
-        this.H = canvas.getAttribute("height");
+        this.canvas = document.getElementById(canvasName);
+        this.gl = this.canvas.getContext("webgl2");
+        this.W =  this.canvas.getAttribute("width");
+        this.H =  this.canvas.getAttribute("height");
 
         this.gl.clearColor(1, 0.6, 0.8, 1);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
