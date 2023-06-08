@@ -119,7 +119,7 @@
                 await cgsgTor.load(rnd, shader, "./models/cgsg_tor2.obj");
                 //await cgsgTor.load(rnd, shader, "./models/cow.obj");
                 //await cgsgText.load(rnd, shader, "./models/cgsg_text.obj");
-                await cgsgText.load(rnd, shader, "./models/tex_cube2.obj");
+                await cgsgText.load(rnd, shader, "./models/tex_cow/tex_cow.obj");
     
                 //cgsgTor.prims.forEach((elem)=>{
                 //    elem.drawType = rnd.gl.LINE_STRIP;
@@ -151,7 +151,7 @@
                     cgsgTor.draw(rnd, camera, matr.rotateY(0.007 * TmpCounter).mul(matr.rotateX(-3.14 / 4)));
                     cgsgTor.draw(rnd, camera, matr.rotateY(0.007 * TmpCounter).mul(matr.rotateX(3.14 / 4)).mul(matr.translate(new vec3(1, 0, 0))));
     
-                    cgsgText.draw(rnd, camera, matr.rotateX(3.14 / 2).mul(matr.translate(new vec3(0.5, 0, 1))));
+                    cgsgText.draw(rnd, camera, matr.rotateX(0).mul(matr.translate(new vec3(0.5, 0, 1))));
                     //model.draw(rnd.gl, camera, math.matr.translate(new math.vec3(0, 0, -3)));
                     //prim.matrWP = math.matr.rotateX(-0.1);
                     //prim.draw(rnd.gl, camera);

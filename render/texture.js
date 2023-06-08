@@ -40,10 +40,10 @@ export class Texture {
         //newImg.src = fileName;
 
         var img = new Image();
-        img.src = "../models/" + fileName;
+        img.src = "../" + fileName;
         img.onload = ()=>{
-            this.constructorByArray(rnd, 1024, 1024, img);
-        }
+            this.constructorByArray(rnd, img.width, img.height, img);
+        };
 
         //var file = new Parse.File("../models/" + fileName);
         //var loader = document.getElementById("imageLoader");
@@ -58,7 +58,7 @@ export class Texture {
         
     }
     
-    constructor(rnd, ...args) {
+    constructor( rnd, ...args ) {
         switch(args.length) {
         case 1:
             this.constructorFromFile(rnd, args[0]);

@@ -156,6 +156,10 @@ export class Model {
 
     async load( rnd, newShader, fileName ) {
         console.log("Loading " + fileName);
+    
+        var pathA = fileName.split('/'),
+            path = fileName.replace(pathA[pathA.length - 1], '');
+
         var mtlsPromise = null;
         var out;
         var outP = fetch(fileName + '?' + Math.random().toString()).then((res)=>{return res.text();}).then((source)=>{
@@ -229,9 +233,9 @@ export class Model {
                     break;
                 case 'mtllib': // Load material lib
                     if (mtlsPromise != null)
-                        mtlsPromise = new Promise.all([mtlsPromise, this.loadMtls(rnd, words[1])]);
+                        mtlsPromise = new Promise.all([mtlsPromise, this.loadMtls(rnd, path + words[1])]);
                     else
-                        mtlsPromise = Material.loadMtls(rnd, words[1]);
+                        mtlsPromise = Material.loadMtls(rnd, path + words[1]);
                     break;
                 case 'usemtl': // Use material
                     useMtl = words[1];
