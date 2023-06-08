@@ -1,1 +1,179 @@
-ASKJDHAKJSdhLKAJHSDkJAHSdkljhAKSDJh
+<!DOCTYPE html>
+<head>
+        <meta charset = "UTF_8"/>
+        <title>CGSG</title>
+        <link rel="stylesheet" href="./css/style.css"/>
+        <!--<script type="text/javascript" src="./ui.js"></script>-->
+    </head>
+    <body>
+        <div class="header">
+            <div class="title">
+                <canvas id="logoCanvas" width=200 height=100></canvas>
+                <h1 class="title">cgsg ae4 site?</h1>
+            </div>
+            <script type="module">               // Logo render
+                import {vec3, matr} from "./math.js";
+                
+                import * as render from "./render/render.js";
+    
+                var rnd = new render.Render("logoCanvas");
+    
+                var scale = 0.5;
+    
+                var camera = new render.Camera(document.getElementById("logoCanvas"), rnd,
+                                new vec3(0.4374, 0.827, 3.30), new vec3(0.4, -0.1, 0), new vec3(0, 1, 0),
+                                render.Camera.createDefMatrProj(parseFloat(rnd.W), parseFloat(rnd.H)), 1);
+    
+                var top = render.Topology.setByPosArrayAndColor([-scale, -scale, 0, 1,
+                                                                   scale, -scale, 0, 1,
+                                                                  scale, scale, 0, 1,
+                                                                 -scale, -scale, 0, 1,
+                                                                 -scale, scale, 0, 1,
+                                                                 scale, scale, 0, 1], [0, 1, 2, 3, 4, 5], [1, 0, 1, 1]);
+    
+                // Shader
+                var shader = new render.Shader();
+                
+                await shader.loadShader(rnd, 'logo');
+                
+                // Topology
+    
+                var cgsgTor = new render.Model(rnd, shader, render.Topology.createCube());
+                var cgsgText = new render.Model(rnd, shader, render.Topology.createCube());
+    
+                await cgsgTor.load(rnd, shader, "./models/cgsg_tor.obj");
+                await cgsgText.load(rnd, shader, "./models/cgsg_text.obj");
+
+                cgsgTor.prims.forEach((elem)=>{
+                    elem.drawType = rnd.gl.LINE_STRIP;
+                });
+    
+                var TmpCounter = 0;
+    
+                // UBO
+                window.setInterval(()=>{
+                    cgsgTor.draw(rnd, camera, matr.rotateY(0.007 * TmpCounter).mul(matr.rotateX(-3.14 / 4)));
+                    cgsgTor.draw(rnd, camera, matr.rotateY(0.007 * TmpCounter).mul(matr.rotateX(3.14 / 4)).mul(matr.translate(new vec3(1, 0, 0))));
+    
+                    cgsgText.draw(rnd, camera, matr.rotateX(3.14 / 2).mul(matr.translate(new vec3(0.5, 0, 1))));
+                    TmpCounter++;
+                }, 10);
+              </script>
+            <p class="description">Some description text I would like to show,
+                because may be it's very interesting to read shit like this.
+                Thanks for reading dear friend.</p>
+        </div>
+        <div class="section">
+            <canvas id="canvas" width="1400" height="900">
+              <script type="module">
+                import {vec3, matr} from "./math.js";
+                
+                import * as render from "./render/render.js";
+    
+                var rnd = new render.Render("canvas");
+    
+                var scale = 0.5;
+    
+                var camera = new render.Camera(document.getElementById("canvas"), rnd,
+                                new vec3(10, 10, 10), new vec3(0, 0, 0), new vec3(0, 1, 0),
+                                render.Camera.createDefMatrProj(parseFloat(rnd.W), parseFloat(rnd.H)), 1);
+    
+                var top = render.Topology.setByPosArrayAndColor([-scale, -scale, 0, 1,
+                                                                 scale, -scale, 0, 1,
+                                                                  scale, scale, 0, 1,
+                                                                 -scale, -scale, 0, 1,
+                                                                 -scale, scale, 0, 1,
+                                                                 scale, scale, 0, 1], [0, 1, 2, 3, 4, 5], [1, 0, 1, 1]);
+    
+                // Shader
+                var shader = new render.Shader();
+                
+                await shader.loadShader(rnd, 'default');
+                
+                // Topology
+    
+                // var prim = new render.Prim(rnd.gl, shader, top, math.matr.scale(new math.vec3(1, 1, 1)).mul(math.matr.translate(new math.vec3(0, 0, -1))));
+                var model = new render.Model(rnd, shader, render.Topology.createCube()); // createTetraedr
+    
+                var cgsgTor = new render.Model(rnd, shader, render.Topology.createCube());
+                var cgsgText = new render.Model(rnd, shader, render.Topology.createCube());
+    
+                await cgsgTor.load(rnd, shader, "./models/cgsg_tor2.obj");
+                await cgsgTor.load(rnd, shader, "./models/cow.obj");
+                await cgsgText.load(rnd, shader, "./models/cgsg_text.obj");
+    
+                //cgsgTor.prims.forEach((elem)=>{
+                //    elem.drawType = rnd.gl.LINE_STRIP;
+                //});
+                //var model = new Model(rnd.gl, shader, top);
+                //await model.load(rnd.gl, shader, "./models/cgsg_tor.obj");
+                await model.load(rnd, shader, "./models/cow.obj");
+    
+                var TmpCounter = 0;
+    
+                // UBO
+                //var uboBuf = new Ubo(rnd.gl, 16, 2);
+    
+                //uboBuf.submit(rnd.gl, new Float32Array(1, 0, 1, 1));
+                //uboBuf.bind(rnd.gl, shader, 'test');
+    
+    
+                var sliders = new render.ShaderSlider4(rnd, "testSliders", 'testSliders', 0, 1, 0);
+                sliders.update(rnd, shader);
+    
+                window.setInterval(()=>{
+                    sliders.update(rnd, shader);
+    
+                    //uboBuf.submit(rnd.gl, new Float32Array([1, 1, Math.sin(TmpCounter / 10), 1]));
+                    //uboBuf.bind(rnd.gl, shader, 'test');
+    
+                    //UboBuf.bind(rnd.gl);
+                    //model.draw(rnd.gl, camera, matr.translate(new vec3(0, 0, 0)));
+                    cgsgTor.draw(rnd, camera, matr.rotateY(0.007 * TmpCounter).mul(matr.rotateX(-3.14 / 4)));
+                    cgsgTor.draw(rnd, camera, matr.rotateY(0.007 * TmpCounter).mul(matr.rotateX(3.14 / 4)).mul(matr.translate(new vec3(1, 0, 0))));
+    
+                    cgsgText.draw(rnd, camera, matr.rotateX(3.14 / 2).mul(matr.translate(new vec3(0.5, 0, 1))));
+                    //model.draw(rnd.gl, camera, math.matr.translate(new math.vec3(0, 0, -3)));
+                    //prim.matrWP = math.matr.rotateX(-0.1);
+                    //prim.draw(rnd.gl, camera);
+                    //prim.matrWP = math.matr.rotateZ(0.005 * TmpCounter).mul(math.matr.rotateX(0.007 * TmpCounter)).mul(math.matr.translate(new math.vec3(0, 0, -1)));
+                    
+                    TmpCounter++;
+                }, 10);
+              </script>
+            </canvas>
+            <div class="article">
+                <h2>Section name</h2>
+                <p>Here you can't change some sliders or variables, but this text is just for beautiful alignment.</p>
+                <label for="testButton">Click me button:
+                    <input type="button" id="testButton" value="Click me"/>
+                </label><br/>
+                
+                <label>Radio button:</label><br/>
+                <label for="testRadio1">1:
+                    <input type="radio" name="testRadio" id="testRadio1"/>
+                </label><br/>
+                <label for="testRadio2">2:
+                    <input type="radio" name="testRadio" id="testRadio2"/>
+                </label><br/>
+                <label for="testRadio3">3:
+                    <input type="radio" name="testRadio" id="testRadio3"/>
+                </label><br/>
+                
+                <label for="testRange">Test range:
+                <input type="range" id="testRange" min="-1" max="1" step="0.1"/>
+                </label><br/>
+                <div id="testSliders" class="article"></div>
+    
+                <!--<label for="testCheckBox">Test check box:</label>
+                <input type="checkbox" id="testCheckBox"/><br/>
+    
+                <label for="testColorPicker">Choose the color:</label>
+                <input type="color" id="testColorPicker"/><br/>
+    
+                <label for="testText">Print some text:</label>
+                <input type="text" id="testText" value="Text?"/><br/>-->
+            </div>
+        </div>
+    </body>
+</html>
