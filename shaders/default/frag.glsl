@@ -20,11 +20,11 @@ uniform mtl {
     vec4 KdTrans;
     vec4 KsPh;
 };
-
+//////////////////////////////////////////////////////
 uniform testSliders {
     vec4 a;
 };
-
+//////////////////////////////////////////////////////
 
 float Max( float a, float b )
 {
@@ -36,7 +36,6 @@ float Max( float a, float b )
 
 vec3 Shade( vec3 P, vec3 N, vec3 C )
 {
-  bool IsTexture0 = false;
   vec3 L = normalize(vec3(1.0, 2.0, 3.0));
   //vec3 LC = vec3(1, 1, 0.8);
   vec3 color = C.xyz;
@@ -49,15 +48,15 @@ vec3 Shade( vec3 P, vec3 N, vec3 C )
   //color = vec3(0.2);
 
   vec3 kdc = KdTrans.xyz;
-  if (IsTexture0)
+  if (isTexture)
   {
-    //vec4 tc = texture(Tex, DrawTexCoord);
+    vec4 tc = texture(texSampler, v_tex);
     //if (tc.a < 0.1)
-      discard;
-//    kdc = tc.rgb;
+    //  discard;
+    kdc = tc.rgb;
   }
   // Diffuse
-  color += max(0.007, dot(N, L)) * kdc * KsPh.xyz;
+  color += max(0.1, dot(N, L)) * kdc * KsPh.xyz;
  
   //  color = kdc;
   // Specular

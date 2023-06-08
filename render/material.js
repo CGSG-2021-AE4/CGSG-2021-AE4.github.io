@@ -116,7 +116,10 @@ export class Material {
     }
 
     static async loadMtls( rnd, fileName ) {
-        return fetch('./models/' + fileName + '?' + Math.random().toString()).then((res)=>{ return res.text(); }).then((text)=>{
+        var pathA = fileName.split('/'),
+            path = fileName.replace(pathA[pathA.length - 1], '');
+
+        return fetch(fileName + '?' + Math.random().toString()).then((res)=>{ return res.text(); }).then((text)=>{
             var lines = text.split('\n');
             var outMtls = [];
             var curMtlName = null,
@@ -164,7 +167,7 @@ export class Material {
                         //    255, 0, 255, 255, 0, 0, 0, 255, 255, 0, 255, 255, 0, 0, 0, 255,
                         //]);
 
-                        tex = new Texture(rnd, words[1]);
+                        tex = new Texture(rnd, path + words[1]);
                         break;
                     }
                 
