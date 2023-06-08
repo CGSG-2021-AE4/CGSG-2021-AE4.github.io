@@ -1,13 +1,31 @@
 export class Vertex {
     p; // pos
     n; // normal
-    c; // color
-
-    constructor( newP, newN, newC ) {
+    t; // texture coord
+    
+    constructor( newP, newN, newT ) {
         this.p = newP;
         this.n = newN;
-        this.c = newC;
+        this.t = newT;
     }
+
+    static pLen() {
+        return 4;
+    }
+
+    static nLen() {
+        return 4;
+    }
+
+    static tLen() {
+        return 2;
+    }
+
+
+    static len() {
+        return Vertex.pLen() + Vertex.nLen() + Vertex.tLen();
+    }
+
 }
 export class Topology {
     vertexesA;
@@ -35,19 +53,19 @@ export class Topology {
         return outNA;
     };
 
-    getColorArray() {
-        var outColorA;
+    getTexArray() {
+        var outTexA;
 
         for (var i = 0; i < this.Vertexes.length; i++)
-            outColorA[i] = vertexesA[i].c;
-        return outColorA;
+            outTextA[i] = vertexesA[i].t;
+        return outTextA;
     };
 
-    static setByPosArrayAndColor( posA, newIndexesA, color ) {
+    static setByPosArrayAndColor( posA, newIndexesA ) {
         var newT = new Topology([], []);
 
         for (var i = 0; i < posA.length / 4; i++)
-            newT.vertexesA[i] = new Vertex([posA[i * 4], posA[i * 4 + 1], posA[i * 4 + 2], posA[i * 4 + 3]], [1, 0, 0, 1], color);
+            newT.vertexesA[i] = new Vertex([posA[i * 4], posA[i * 4 + 1], posA[i * 4 + 2], posA[i * 4 + 3]], [1, 0, 0, 1], [0, 0]);
         newT.indexesA = newIndexesA;
         return newT;
     }
@@ -67,7 +85,7 @@ export class Topology {
         var v = [];
 
         for (var i = 0; i < p.length; i++)
-            v[i] = p[i].concat(p[i]).concat([1, 0, 0, 1]);
+            v[i] = p[i].concat(p[i]).concat([1, 0, 0, 1, 0, 0]);
 
         var inds = [0, 1, 2,
                     0, 2, 3,
@@ -95,7 +113,7 @@ export class Topology {
         var v = [];
 
         for (var i = 0; i < p.length; i++)
-            v[i] = p[i].concat(p[i]).concat([1, 0, 0, 1]);
+            v[i] = p[i].concat(p[i]).concat([1, 0, 0, 1, 0, 0]);
 
         var inds = [0, 1, 2, // Bottom Face
                     0, 2, 3,
@@ -125,17 +143,17 @@ export class Topology {
     getVertexArray() {
         if (this.isVertexesA)
         {
-            var outV = new Float32Array(this.vertexesA.length * 12);
+            var outV = new Float32Array(this.vertexesA.length * Vertex.len());
 
-            for (var i = 0; i < this.vertexesA.length * 12; i++)
-                outV[i] = this.vertexesA[Math.floor(i / 12)][i % 12];
+            for (var i = 0; i < this.vertexesA.length * Vertex.len(); i++)
+                outV[i] = this.vertexesA[Math.floor(i / Vertex.len())][i % Vertex.len()];
             
             return  outV;
         }
 
         var outV = [];
         this.vertexesA.forEach((elem) => {
-            outV = outV.concat(elem.p.concat(elem.n).concat(elem.c));
+            outV = outV.concat(elem.p.concat(elem.n).concat(elem.t));
         });
         return new Float32Array(outV);
     }

@@ -3,7 +3,7 @@ precision highp float;
 
 in vec4 v_pos;
 in vec4 v_normal;
-in vec4 v_color;
+in vec4 v_tex;
 
 out vec4 o_color;
 

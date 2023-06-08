@@ -1,4 +1,4 @@
-import {Topology} from "./topology.js";
+import {Topology, Vertex} from "./topology.js";
 import {Material} from "./material.js";
 
 export class Prim {
@@ -20,9 +20,15 @@ export class Prim {
         else
             this.mtlName = newMtlName;
         var posLoc = rnd.gl.getAttribLocation(this.shader.program, 'in_pos');
+        if (posLoc === -1)
+            console.log(`Can't find "in_pos".`);
         var normalLoc = rnd.gl.getAttribLocation(this.shader.program, 'in_norm');
-        var colorLoc = rnd.gl.getAttribLocation(this.shader.program, 'in_color');
-
+        if (normalLoc === -1)
+            console.log(`Can't find "in_norm".`);
+        var texLoc = rnd.gl.getAttribLocation(this.shader.program, 'in_tex');
+        if (texLoc === -1)
+            console.log(`Can't find "in_tex".`);
+    
         this.primVAO = rnd.gl.createVertexArray();
         rnd.gl.bindVertexArray(this.primVAO);
 
@@ -52,31 +58,31 @@ export class Prim {
         rnd.gl.enableVertexAttribArray(posLoc);
         rnd.gl.vertexAttribPointer(
             posLoc,  
-            4,            // 2 values per vertex shader iteration
-            rnd.gl.FLOAT,     // data is 32bit floats
-            false,        // don't normalize
-            4 * 4 * 3,    // stride (0 = auto)
-            0,            // offset into buffer
+            Vertex.pLen(),
+            rnd.gl.FLOAT,
+            false,
+            Vertex.len() * 4,
+            0,
         );
 
         rnd.gl.enableVertexAttribArray(normalLoc);
         rnd.gl.vertexAttribPointer(
             normalLoc,  
-            4,            // 2 values per vertex shader iteration
-            rnd.gl.FLOAT,     // data is 32bit floats
-            false,        // don't normalize
-            4 * 4 * 3,    // stride (0 = auto)
-            4 * 4,        // offset into buffer
+            Vertex.nLen(),
+            rnd.gl.FLOAT,
+            false,
+            Vertex.len() * 4,
+            Vertex.pLen() * 4,
         );
 
-        rnd.gl.enableVertexAttribArray(colorLoc);
+        rnd.gl.enableVertexAttribArray(texLoc);
         rnd.gl.vertexAttribPointer(
-            colorLoc,  
-            4,            // 2 values per vertex shader iteration
-            rnd.gl.FLOAT,     // data is 32bit floats
-            false,        // don't normalize
-            4 * 4 * 3,    // stride (0 = auto)
-            2 * 4 * 4,    // offset into buffer
+            texLoc,  
+            Vertex.tLen(),
+            rnd.gl.FLOAT,
+            false,
+            Vertex.len() * 4,
+            (Vertex.pLen() + Vertex.nLen()) * 4,
         );
     }
 
@@ -146,6 +152,7 @@ export class Model {
     }
 
     async load( rnd, newShader, fileName ) {
+        console.log("Loading " + fileName);
         var mtlsPromise = null;
         var out;
         var outP = fetch(fileName + '?' + Math.random().toString()).then((res)=>{return res.text();}).then((source)=>{
@@ -192,15 +199,15 @@ export class Model {
                 else if (words[0] == 'f')
                 {
                     var vi = words[1].split('/');
-                    vA[vCounter] = pA[vi[0]].concat(nA[vi[2]]).concat([1, 0, 1, 1]);
+                    vA[vCounter] = pA[vi[0]].concat(nA[vi[2]]).concat([0, 0]);
                     iA[vCounter] = vCounter++;
 
                     vi = words[2].split('/');
-                    vA[vCounter] = pA[vi[0]].concat(nA[vi[2]]).concat([1, 0, 1, 1]);
+                    vA[vCounter] = pA[vi[0]].concat(nA[vi[2]]).concat([0, 0]);
                     iA[vCounter] = vCounter++;
 
                     vi = words[3].split('/');
-                    vA[vCounter] = pA[vi[0]].concat(nA[vi[2]]).concat([1, 0, 1, 1]);
+                    vA[vCounter] = pA[vi[0]].concat(nA[vi[2]]).concat(0, 0);
                     iA[vCounter] = vCounter++;
                 }
                 else if (words[0] === 'mtllib')
