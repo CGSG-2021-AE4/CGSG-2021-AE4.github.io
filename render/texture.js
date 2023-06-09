@@ -27,7 +27,18 @@ export class Texture {
             bits);
 
         this.sampler = rnd.gl.createSampler();
-        rnd.gl.samplerParameteri(this.sampler, rnd.gl.TEXTURE_MIN_FILTER, rnd.gl.LINEAR);
+        //rnd.gl.samplerParameteri(this.sampler, rnd.gl.TEXTURE_MIN_FILTER, rnd.gl.LINEAR);
+        this.setParams(rnd, [
+            [rnd.gl.TEXTURE_MIN_FILTER, rnd.gl.LINEAR],
+        ]);
+    }
+
+    setParams( rnd, params ) {
+        rnd.gl.bindTexture(rnd.gl.TEXTURE_2D, this.texture);
+
+        params.forEach((param)=>{
+            rnd.gl.samplerParameteri(this.sampler, param[0], param[1]);
+        });
     }
 
     constructorFromFile( rnd, fileName ) {

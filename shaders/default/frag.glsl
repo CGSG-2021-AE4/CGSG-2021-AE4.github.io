@@ -79,7 +79,11 @@ void main() {
     if (a.w < 0.3)
         o_color = vec4(Shade(v_pos.xyz, v_normal.xyz, Ka.xyz), Ka.w);//CamAt;
     else if (a.w < 0.7)
+    {
         o_color = a;
+        // KsPh = vec4(a.xyz, KsPh.w);
+        // o_color = vec4(Shade(v_pos.xyz, v_normal.xyz, Ka.xyz), Ka.w);//CamAt;
+    }
     else
         if (isTexture)
             o_color = texture(texSampler, v_tex);

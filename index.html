@@ -87,25 +87,15 @@
                 </p>
         </div>
         <div class="section">
-            <canvas id="canvas">
+            <canvas id="mainCanvas">
               <script type="module">
                 import {vec3, matr} from "./math.js";
                 
                 import * as render from "./render/render.js";
     
-                var rnd = new render.Render("canvas");
+                var rnd = new render.Render("mainCanvas");
     
-                var scale = 0.5;
-    
-                var camera = new render.Camera(rnd,
-                                new vec3(10, 10, 10), new vec3(0, 0, 0), new vec3(0, 1, 0), 1);
-    
-                var top = render.Topology.setByPosArrayAndColor([-scale, -scale, 0, 1,
-                                                                 scale, -scale, 0, 1,
-                                                                  scale, scale, 0, 1,
-                                                                 -scale, -scale, 0, 1,
-                                                                 -scale, scale, 0, 1,
-                                                                 scale, scale, 0, 1], [0, 1, 2, 3, 4, 5]);
+                var camera = new render.Camera(rnd, new vec3(10, 10, 10), new vec3(0, 0, 0), new vec3(0, 1, 0), 1);
     
                 // Shader
                 var shader = new render.Shader();
@@ -114,23 +104,13 @@
                 
                 // Topology
     
-                // var prim = new render.Prim(rnd.gl, shader, top, math.matr.scale(new math.vec3(1, 1, 1)).mul(math.matr.translate(new math.vec3(0, 0, -1))));
-                var model = new render.Model(rnd, shader, render.Topology.createCube()); // createTetraedr
+               //var model = new render.Model(rnd, shader, render.Topology.createCube()); // createTetraedr
     
-                var cgsgTor = new render.Model(rnd, shader, render.Topology.createCube());
-                var cgsgText = new render.Model(rnd, shader, render.Topology.createCube());
+                var cgsgTor = new render.Model();
+                var cgsgText = new render.Model();
     
                 await cgsgTor.load(rnd, shader, "./models/cgsg_tor2.obj");
-                //await cgsgTor.load(rnd, shader, "./models/cow.obj");
-                //await cgsgText.load(rnd, shader, "./models/cgsg_text.obj");
                 await cgsgText.load(rnd, shader, "./models/tex_cow/tex_cow.obj");
-    
-                //cgsgTor.prims.forEach((elem)=>{
-                //    elem.drawType = rnd.gl.LINE_STRIP;
-                //});
-                //var model = new Model(rnd.gl, shader, top);
-                //await model.load(rnd.gl, shader, "./models/cgsg_tor.obj");
-                await model.load(rnd, shader, "./models/cow.obj");
     
                 var TmpCounter = 0;
     

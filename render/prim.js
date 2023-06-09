@@ -120,6 +120,7 @@ export class Model {
     }
 
     constructEmpty() {
+        
     }
     constructor( ...args ) {
         switch (args.length)

@@ -1,0 +1,32 @@
+@import "./theme.css";
+/* Layouts */
+
+div.header {
+    margin-top: 0.3em;
+    margin-bottom: 0.3em;
+    background-color: var(--sub-alt-color);
+    border-radius: 1em;
+    padding: 0.1em;
+}
+
+div.title {
+    display: flex;
+}
+
+div.article {
+    border: 0.3em dashed var(--sub-alt-color);
+    border-radius: 1em;
+    padding: 0.5em;
+    /*width: 30%;                                           /* TEEEEEEEEEEEEEEEMP */
+    
+    /*-webkit-user-select: none;*/
+}
+
+div.section {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+}
+
+/* Inputs */
