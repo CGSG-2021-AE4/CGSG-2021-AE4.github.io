@@ -207,6 +207,10 @@ canvas {
     margin: 0.5em;
     border: 0.2em dashed var(--sub-color);
     border-radius: 0.6em;
+
+    display: flex;
+    flex: 1;
+    resize: both;
 }
 
 canvas:active {
@@ -215,6 +219,8 @@ canvas:active {
 
 canvas#logoCanvas {
     border: none;
+
+    flex: none;
 }
 
 

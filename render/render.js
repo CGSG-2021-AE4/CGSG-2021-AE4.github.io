@@ -17,8 +17,8 @@ export class Camera {
     matrVP;
     ubo;
     
-    constructor( rnd, newPos, newAt, newUp, newMatrProj, enableMovement ) {
-        this.matrProj = newMatrProj;
+    constructor( rnd, newPos, newAt, newUp, enableMovement ) {
+        this.matrProj = Camera.createDefMatrProj(rnd.W, rnd.H);
         this.pos = newPos;
         this.at = newAt;
         this.up = newUp;
@@ -48,6 +48,15 @@ export class Camera {
         this.dirLen = this.at.sub(this.pos).length(); 
 
         this.matrVP = math.matr.view(this.pos, this.at, this.up);
+    }
+
+    updateSize( rnd ) {
+        if (rnd.W != rnd.canvas.clientWidth ||
+            rnd.H != rnd.canvas.clientHeight)
+        {
+            rnd.resize(rnd.canvas.clientWidth, rnd.canvas.clientHeight);
+            this.matrProj = Camera.createDefMatrProj(rnd.W, rnd.H);
+        }
     }
 
     updateUbo( rnd, shader ) {
@@ -149,8 +158,17 @@ export class Render {
 
         this.canvas = document.getElementById(canvasName);
         this.gl = this.canvas.getContext("webgl2");
-        this.W =  this.canvas.getAttribute("width");
-        this.H =  this.canvas.getAttribute("height");
+
+        this.canvas.onresize = this.updateSize;
+
+        //this.W =  this.canvas.offsetWidth;\
+
+        //this.updateSize();
+
+        //var canvasStyle = window.getComputedStyle(this.canvas);
+        this.resize(this.canvas.clientWidth, this.canvas.clientHeight);
+        //this.canvas.ariaSetSize(300, 300);
+        
 
         this.gl.clearColor(1, 0.6, 0.8, 1);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
@@ -160,5 +178,22 @@ export class Render {
 
         // Load def shader
         Material.addToMtlLib(this, 'def', new Material(this));
+    }
+
+    resize( newW, newH ) {
+        //var canvasStyle = window.getComputedStyle(this.canvas);
+
+        //this.canvas.width  = this.W = parseFloat(canvasStyle.width);
+        //this.canvas.height = this.H = parseFloat(canvasStyle.height);
+
+        this.canvas.width = this.W = newW;
+        this.canvas.height = this.H = newH;
+        this.gl.viewport(0, 0, this.W, this.H);
+        //this.gl = this.canvas.getContext("webgl2");
+
+        //this.gl.drawingBufferWidth = this.W; 
+        //this.gl.drawingBufferHeight = this.H; 
+        //this.gl = this.canvas.getContext("webgl2");
+
     }
 }

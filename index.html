@@ -33,8 +33,7 @@
                 var logo_defCamPos = new vec3(0.4374, 0.827, 3.30);
     
                 var logo_camera = new render.Camera(logo_rnd,
-                logo_defCamPos, new vec3(0.4, -0.1, 0), new vec3(0, 1, 0),
-                                render.Camera.createDefMatrProj(parseFloat(logo_rnd.W), parseFloat(logo_rnd.H)), 0);
+                logo_defCamPos, new vec3(0.4, -0.1, 0), new vec3(0, 1, 0), 0);
     
                 // Shader
                 var logo_shader = new render.Shader();
@@ -67,6 +66,7 @@
     
                 // UBO
                 window.setInterval((e)=>{
+                    logo_camera.updateSize(logo_rnd);
                     logo_camera.pos = logo_camera.pos.add(cameraTargetPos.sub(logo_camera.pos).mulNum(0.1));
                     logo_camera.update();
                     logo_cgsgTor.draw(logo_rnd, logo_camera, matr.rotateY(0.007 * logo_TmpCounter).mul(matr.rotateX(-3.14 / 4)));
@@ -77,17 +77,17 @@
                 }, 10);
               </script>
             <p class="description">Now this site has only one project.
-                I'm going to add project selector soon.
-                At the moment this page as two canvases, each has:<br/>
+                I'm going to add a project selector soon.
+                At the moment this page has two canvases, each has:<br/>
                 - Camera<br/>
                 - Models<br/>
                 - Materials<br/>
                 - Костыль lighting<br/>
-                Also I have beautifull css and some sliders at right bottom that you can move.
+                Also I have beautiful css and several sliders at right bottom.<br/>
                 </p>
         </div>
         <div class="section">
-            <canvas id="canvas" width="1400" height="900">
+            <canvas id="canvas">
               <script type="module">
                 import {vec3, matr} from "./math.js";
                 
@@ -98,8 +98,7 @@
                 var scale = 0.5;
     
                 var camera = new render.Camera(rnd,
-                                new vec3(10, 10, 10), new vec3(0, 0, 0), new vec3(0, 1, 0),
-                                render.Camera.createDefMatrProj(parseFloat(rnd.W), parseFloat(rnd.H)), 1);
+                                new vec3(10, 10, 10), new vec3(0, 0, 0), new vec3(0, 1, 0), 1);
     
                 var top = render.Topology.setByPosArrayAndColor([-scale, -scale, 0, 1,
                                                                  scale, -scale, 0, 1,
@@ -147,6 +146,7 @@
     
                 window.setInterval(()=>{
                     sliders.update(rnd, shader);
+                    camera.updateSize(rnd);
     
                     //uboBuf.submit(rnd.gl, new Float32Array([1, 1, Math.sin(TmpCounter / 10), 1]));
                     //uboBuf.bind(rnd.gl, shader, 'test');
@@ -167,8 +167,8 @@
               </script>
             </canvas>
             <div class="article">
-                <h2>Section name</h2>
-                <p>Here you can't change some sliders or variables, but this text is just for beautiful alignment.</p>
+                <h2>Settings?</h2>
+                <p>Here you can change some sliders or variables, but this text is just for a beautiful alignment.</p>
                 <label for="testButton">Click me button:
                     <input type="button" id="testButton" value="Click me"/>
                 </label><br/>
