@@ -46,4 +46,11 @@ canvas#logoCanvas {
 
 canvas#mainCanvas {
     flex:3;
+
+    width: 1200px;
+    height: 650px;
+    display: block;
+    size: initial;
+    flex: 3;
+    resize: none;
 }

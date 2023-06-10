@@ -28,7 +28,7 @@ export class Prim {
         if (normalLoc === -1)
             console.log(`Can't find "in_norm".`);
         var texLoc = rnd.gl.getAttribLocation(this.shader.program, 'in_tex');
-        if (texLoc === -1)
+        if (texLoc === -1)  
             console.log(`Can't find "in_tex".`);
     
         this.primVAO = rnd.gl.createVertexArray();
@@ -94,7 +94,7 @@ export class Prim {
         //this.mtl.apply(gl, this.shader);
 
         
-        rnd.gl.clearColor(1, 0.6, 0.8, 1);
+        //rnd.gl.clearColor(1, 0.6, 0.8, 1);
         rnd.gl.bindVertexArray(this.primVAO);
         rnd.gl.useProgram(this.shader.program);
         

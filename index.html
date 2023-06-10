@@ -18,7 +18,7 @@
                 <canvas id="logoCanvas" width=200 height=100></canvas>
                 <h1 class="title">cgsg ae4 site?</h1>
             </div>
-            <script type="module">               // Logo render
+            <!--<script type="module">               // Logo render
                 import {vec3, matr} from "./math.js";
                 //import * as PNG from "./node_modules/pngjs/browser.js";
                 //import pngjs from "./package.json";
@@ -75,7 +75,7 @@
                     logo_cgsgText.draw(logo_rnd, logo_camera, matr.rotateX(3.14 / 2).mul(matr.translate(new vec3(0.5, 0, 1))));
                     logo_TmpCounter++;
                 }, 10);
-              </script>
+              </script>-->
             <p class="description">Now this site has only one project.
                 I'm going to add a project selector soon.
                 At the moment this page has two canvases, each has:<br/>
@@ -100,7 +100,11 @@
                 // Shader
                 var shader = new render.Shader();
                 
-                await shader.loadShader(rnd, 'default');
+                await shader.loadShader(rnd, 'default_for_target');
+
+                var targetShader = new render.Shader();
+                
+                await targetShader.loadShader(rnd, 'target');
                 
                 // Topology
     
@@ -108,6 +112,8 @@
     
                 var cgsgTor = new render.Model();
                 var cgsgText = new render.Model();
+
+                var target = new render.Targets(rnd, targetShader);
     
                 await cgsgTor.load(rnd, shader, "./models/cgsg_tor2.obj");
                 await cgsgText.load(rnd, shader, "./models/tex_cow/tex_cow.obj");
@@ -127,21 +133,24 @@
                 window.setInterval(()=>{
                     sliders.update(rnd, shader);
                     camera.updateSize(rnd);
+                    target.use(rnd);
+
     
                     //uboBuf.submit(rnd.gl, new Float32Array([1, 1, Math.sin(TmpCounter / 10), 1]));
                     //uboBuf.bind(rnd.gl, shader, 'test');
     
                     //UboBuf.bind(rnd.gl);
                     //model.draw(rnd.gl, camera, matr.translate(new vec3(0, 0, 0)));
-                    cgsgTor.draw(rnd, camera, matr.rotateY(0.007 * TmpCounter).mul(matr.rotateX(-3.14 / 4)));
-                    cgsgTor.draw(rnd, camera, matr.rotateY(0.007 * TmpCounter).mul(matr.rotateX(3.14 / 4)).mul(matr.translate(new vec3(1, 0, 0))));
-    
-                    cgsgText.draw(rnd, camera, matr.rotateX(0).mul(matr.translate(new vec3(0.5, 0, 1))));
+                    //cgsgTor.draw(rnd, camera, matr.rotateY(0.007 * TmpCounter).mul(matr.rotateX(-3.14 / 4)));
+                    //cgsgTor.draw(rnd, camera, matr.rotateY(0.007 * TmpCounter).mul(matr.rotateX(3.14 / 4)).mul(matr.translate(new vec3(1, 0, 0))));
+    //
+                    cgsgText.draw(rnd, camera, matr.translate(new vec3(0, 0, 0)));
                     //model.draw(rnd.gl, camera, math.matr.translate(new math.vec3(0, 0, -3)));
                     //prim.matrWP = math.matr.rotateX(-0.1);
                     //prim.draw(rnd.gl, camera);
                     //prim.matrWP = math.matr.rotateZ(0.005 * TmpCounter).mul(math.matr.rotateX(0.007 * TmpCounter)).mul(math.matr.translate(new math.vec3(0, 0, -1)));
                     
+                    target.draw(rnd, camera);
                     TmpCounter++;
                 }, 10);
               </script>

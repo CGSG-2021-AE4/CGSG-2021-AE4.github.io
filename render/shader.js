@@ -1,5 +1,6 @@
 export class Shader {
     program;
+    name;
 
     constructor() {
     }
@@ -29,14 +30,16 @@ export class Shader {
         });
     }
 
-    async loadShader( rnd, name ) {
+    async loadShader( rnd, newName ) {
         var v_shader;
         var f_shader;
 
+        this.name = newName;
+
         this.program = rnd.gl.createProgram();
 
-        var result = Promise.all([Shader.loadShaderPart(rnd, rnd.gl.VERTEX_SHADER,   name).then((shader)=>{v_shader = shader}),
-                                  Shader.loadShaderPart(rnd, rnd.gl.FRAGMENT_SHADER, name).then((shader)=>{f_shader = shader})]);
+        var result = Promise.all([Shader.loadShaderPart(rnd, rnd.gl.VERTEX_SHADER,   this.name).then((shader)=>{v_shader = shader}),
+                                  Shader.loadShaderPart(rnd, rnd.gl.FRAGMENT_SHADER, this.name).then((shader)=>{f_shader = shader})]);
 
         return result.then(()=>{
             rnd.gl.attachShader(this.program, v_shader);

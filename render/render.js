@@ -3,8 +3,9 @@ import {Ubo, Material} from "./material.js";
 import {Shader} from "./shader.js";
 import {Topology} from "./topology.js";
 import {Model, Prim} from "./prim.js";
+import { Targets } from "./target.js";
 
-export {Ubo, Material, Shader, Topology, Model, Prim };
+export {Ubo, Material, Shader, Topology, Model, Prim, Targets};
 
 export class Camera {
     matrProj;
@@ -178,13 +179,19 @@ export class Render {
 
         // Load def shader
         Material.addToMtlLib(this, 'def', new Material(this));
+
+
+        // Extentions
+        //console.log(this.gl.getSupportedExtensions());
+        this.gl.getExtension("EXT_color_buffer_float");
+        this.gl.getExtension("OES_texture_float_linear");
     }
 
     resize( newW, newH ) {
         //var canvasStyle = window.getComputedStyle(this.canvas);
 
-        //this.canvas.width  = this.W = parseFloat(canvasStyle.width);
-        //this.canvas.height = this.H = parseFloat(canvasStyle.height);
+        // this.canvas.height = this.H = parseFloat(canvasStyle.height);
+        // this.canvas.width  = this.W = parseFloat(canvasStyle.width);
 
         this.canvas.width = this.W = newW;
         this.canvas.height = this.H = newH;
