@@ -94,63 +94,18 @@
                 import * as render from "./render/render.js";
     
                 var rnd = new render.Render("mainCanvas");
+                await rnd.init();
     
-                var camera = new render.Camera(rnd, new vec3(10, 10, 10), new vec3(0, 0, 0), new vec3(0, 1, 0), 1);
-    
-                // Shader
-                var shader = new render.Shader();
-                
-                await shader.loadShader(rnd, 'default_for_target');
+                var cgsgTor = await rnd.createModel("./models/cgsg_tor2.obj");
+                var cgsgText = await rnd.createModel("./models/tex_cow/tex_cow.obj");
 
-                var targetShader = new render.Shader();
-                
-                await targetShader.loadShader(rnd, 'target');
-                
-                // Topology
-    
-               //var model = new render.Model(rnd, shader, render.Topology.createCube()); // createTetraedr
-    
-                var cgsgTor = new render.Model();
-                var cgsgText = new render.Model();
-
-                var target = new render.Targets(rnd, targetShader);
-    
-                await cgsgTor.load(rnd, shader, "./models/cgsg_tor2.obj");
-                await cgsgText.load(rnd, shader, "./models/tex_cow/tex_cow.obj");
-    
                 var TmpCounter = 0;
     
-                // UBO
-                //var uboBuf = new Ubo(rnd.gl, 16, 2);
-    
-                //uboBuf.submit(rnd.gl, new Float32Array(1, 0, 1, 1));
-                //uboBuf.bind(rnd.gl, shader, 'test');
-    
-    
-                var sliders = new render.ShaderSlider4(rnd, "testSliders", 'testSliders', 0, 1, 0);
-                sliders.update(rnd, shader);
-    
                 window.setInterval(()=>{
-                    sliders.update(rnd, shader);
-                    camera.updateSize(rnd);
-                    target.use(rnd);
+                    rnd.drawModel(cgsgText, matr.translate(new vec3(0, 0, 0)));
 
-    
-                    //uboBuf.submit(rnd.gl, new Float32Array([1, 1, Math.sin(TmpCounter / 10), 1]));
-                    //uboBuf.bind(rnd.gl, shader, 'test');
-    
-                    //UboBuf.bind(rnd.gl);
-                    //model.draw(rnd.gl, camera, matr.translate(new vec3(0, 0, 0)));
-                    //cgsgTor.draw(rnd, camera, matr.rotateY(0.007 * TmpCounter).mul(matr.rotateX(-3.14 / 4)));
-                    //cgsgTor.draw(rnd, camera, matr.rotateY(0.007 * TmpCounter).mul(matr.rotateX(3.14 / 4)).mul(matr.translate(new vec3(1, 0, 0))));
-    //
-                    cgsgText.draw(rnd, camera, matr.translate(new vec3(0, 0, 0)));
-                    //model.draw(rnd.gl, camera, math.matr.translate(new math.vec3(0, 0, -3)));
-                    //prim.matrWP = math.matr.rotateX(-0.1);
-                    //prim.draw(rnd.gl, camera);
-                    //prim.matrWP = math.matr.rotateZ(0.005 * TmpCounter).mul(math.matr.rotateX(0.007 * TmpCounter)).mul(math.matr.translate(new math.vec3(0, 0, -1)));
-                    
-                    target.draw(rnd, camera);
+                    rnd.render();
+
                     TmpCounter++;
                 }, 10);
               </script>

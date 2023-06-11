@@ -1,4 +1,7 @@
 import { Texture } from "./texture.js";
+import { Topology } from "./topology.js";
+import { Prim } from "./prim.js";
+import { vec3, matr } from "../math.js";
 
 export class Targets {
     frameBuffer;
@@ -13,7 +16,6 @@ export class Targets {
     depthTex;
 
     primVAO;
-    shader;
 
     static createTargetTex( rnd, attachment ) {
         var outTex = new Texture(rnd, rnd.W, rnd.H,
@@ -34,7 +36,7 @@ export class Targets {
         return outTex;
     }
 
-    constructor( rnd, newShader ) {
+    constructor( rnd ) {
        
         this.frameBuffer = rnd.gl.createFramebuffer();
         rnd.gl.bindFramebuffer(rnd.gl.FRAMEBUFFER, this.frameBuffer);
@@ -47,7 +49,6 @@ export class Targets {
             rnd.gl.COLOR_ATTACHMENT4,
             rnd.gl.COLOR_ATTACHMENT5,
         ]);
-
 
         // Texturies
         this.texPos =        Targets.createTargetTex(rnd, 0);
@@ -71,59 +72,53 @@ export class Targets {
         ]);
         rnd.gl.framebufferTexture2D(rnd.gl.FRAMEBUFFER, rnd.gl.DEPTH_ATTACHMENT, rnd.gl.TEXTURE_2D, this.depthTex.texture, 0);
 
-        var vA = new Float32Array([-1, -1, 0, 1,   0, 0,
-                                   1, -1, 0, 1,   1, 0,
-                                   -1, 1, 0, 1,   0, 1,
-                                   1, 1, 0, 1,   1, 1]),
-            indA = new Uint32Array([0, 1, 3, 0, 2, 3]);
 
-        // Making target prim
-        this.shader = newShader; // TODO
-         
-        var posLoc = rnd.gl.getAttribLocation(this.shader.program, 'in_pos');
-        if (posLoc === -1)
-            console.log(`Can't find "in_pos".`);
-        var texLoc = rnd.gl.getAttribLocation(this.shader.program, 'in_tex');
-        if (texLoc === -1)
-            console.log(`Can't find "in_tex".`);
-    
-        this.primVAO = rnd.gl.createVertexArray();
-        rnd.gl.bindVertexArray(this.primVAO);
-
-        var Buf = rnd.gl.createBuffer();
-
-        rnd.gl.bindBuffer(rnd.gl.ARRAY_BUFFER, Buf);
-        rnd.gl.bufferData(rnd.gl.ARRAY_BUFFER, vA, rnd.gl.STATIC_DRAW);
-
-        var indexBuf = rnd.gl.createBuffer();
-
-        rnd.gl.bindBuffer(rnd.gl.ELEMENT_ARRAY_BUFFER, indexBuf);
-        rnd.gl.bufferData(rnd.gl.ELEMENT_ARRAY_BUFFER, indA, rnd.gl.STATIC_DRAW);
-
-        // Bind to shader
-
-        rnd.gl.enableVertexAttribArray(posLoc);
-        rnd.gl.vertexAttribPointer(
-            posLoc,  
-            4,
-            rnd.gl.FLOAT,
-            false,
-            (4 + 2) * 4,
-            0,
-        );
-        
-        rnd.gl.enableVertexAttribArray(texLoc);
-        rnd.gl.vertexAttribPointer(
-            texLoc,  
-            2,
-            rnd.gl.FLOAT,
-            false,
-            (4 + 2) * 4,
-            4 * 4,
-        );
+        //// Making target prim
+        // 
+        //var posLoc = rnd.gl.getAttribLocation(shader.program, 'in_pos');
+        //if (posLoc === -1)
+        //    console.log(`Can't find "in_pos".`);
+        //var texLoc = rnd.gl.getAttribLocation(shader.program, 'in_tex');
+        //if (texLoc === -1)
+        //    console.log(`Can't find "in_tex".`);
+    //
+        //this.primVAO = rnd.gl.createVertexArray();
+        //rnd.gl.bindVertexArray(this.primVAO);
+//
+        //var Buf = rnd.gl.createBuffer();
+//
+        //rnd.gl.bindBuffer(rnd.gl.ARRAY_BUFFER, Buf);
+        //rnd.gl.bufferData(rnd.gl.ARRAY_BUFFER, vA, rnd.gl.STATIC_DRAW);
+//
+        //var indexBuf = rnd.gl.createBuffer();
+//
+        //rnd.gl.bindBuffer(rnd.gl.ELEMENT_ARRAY_BUFFER, indexBuf);
+        //rnd.gl.bufferData(rnd.gl.ELEMENT_ARRAY_BUFFER, indA, rnd.gl.STATIC_DRAW);
+//
+        //// Bind to shader
+//
+        //rnd.gl.enableVertexAttribArray(posLoc);
+        //rnd.gl.vertexAttribPointer(
+        //    posLoc,  
+        //    4,
+        //    rnd.gl.FLOAT,
+        //    false,
+        //    (4 + 2) * 4,
+        //    0,
+        //);
+        //
+        //rnd.gl.enableVertexAttribArray(texLoc);
+        //rnd.gl.vertexAttribPointer(
+        //    texLoc,  
+        //    2,
+        //    rnd.gl.FLOAT,
+        //    false,
+        //    (4 + 2) * 4,
+        //    4 * 4,
+        //);
     }
 
-    use( rnd ) {
+    applyFB( rnd ) {
         //rnd.gl.enable(rnd.gl.DEPTH_TEST);
 
         rnd.gl.bindFramebuffer(rnd.gl.FRAMEBUFFER, this.frameBuffer);
@@ -135,32 +130,22 @@ export class Targets {
         //gl.enable(gl.CULL_FACE);
     }
 
-    draw( rnd, camera ) {
+    static applyCanvas( rnd ) {
         rnd.gl.bindFramebuffer(rnd.gl.FRAMEBUFFER, null);
-
-        //rnd.gl.disable(rnd.gl.DEPTH_TEST);
-
         rnd.gl.clearColor(0.30, 0.47, 0.8, 1);   // clear to white
         rnd.gl.clear(rnd.gl.COLOR_BUFFER_BIT | rnd.gl.DEPTH_BUFFER_BIT);
+    }
 
-        // dRAW
-        rnd.gl.useProgram(this.shader.program);
-
-        //this.colorTex.bind(rnd, this.shader, "inColor", 0);
-        //this.colorTex.bind(rnd, this.shader, "inTex", 1);
-
-        this.texPos.bind(rnd, this.shader, "inPos", 0);
-        this.texNIsShade.bind(rnd, this.shader, "inNIsShade", 1);
-        this.texKa.bind(rnd, this.shader, "inKa", 2);
-        this.texKd.bind(rnd, this.shader, "inKd", 3);
-        this.texKsPh.bind(rnd, this.shader, "inKsPh", 4);
-        this.texColorTrans.bind(rnd, this.shader, "inColorTrans", 5);
-
-        camera.updateUbo(rnd, this.shader);
-
-        rnd.gl.bindVertexArray(this.primVAO);
-        rnd.gl.drawElements(rnd.gl.TRIANGLES, 6, rnd.gl.UNSIGNED_INT, 0);
-        
+    bindSamplers( rnd, shader ) {
+        this.texPos.bind(rnd, shader, "inPos", 0);
+        this.texNIsShade.bind(rnd, shader, "inNIsShade", 1);
+        this.texKa.bind(rnd, shader, "inKa", 2);
+        this.texKd.bind(rnd, shader, "inKd", 3);
+        this.texKsPh.bind(rnd, shader, "inKsPh", 4);
+        this.texColorTrans.bind(rnd, shader, "inColorTrans", 5);
+    }
+    
+    unbindSamplers( rnd ) {
         this.texPos.       unbind(rnd, 0);
         this.texNIsShade.  unbind(rnd, 1);
         this.texKa.        unbind(rnd, 2);
@@ -168,4 +153,6 @@ export class Targets {
         this.texKsPh.      unbind(rnd, 4);
         this.texColorTrans.unbind(rnd, 5);
     }
+    
+    
 }

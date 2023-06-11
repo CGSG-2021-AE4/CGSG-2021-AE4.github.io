@@ -29,11 +29,12 @@ export class Ubo {
 
     bind( rnd, shader, name ) {
         var index = rnd.gl.getUniformBlockIndex(shader.program, name);
-        if (index === -1)
-            console.log("FUCK: can't bind to " + name);
-
-        rnd.gl.uniformBlockBinding(shader.program, index, this.binding);
-        rnd.gl.bindBufferBase(rnd.gl.UNIFORM_BUFFER, this.binding, this.buf);
+        if (index != -1 && index != 4294967295)
+        {
+            rnd.gl.uniformBlockBinding(shader.program, index, this.binding);
+            rnd.gl.bindBufferBase(rnd.gl.UNIFORM_BUFFER, this.binding, this.buf);
+        }
+        //else console.log("FUCK: can't bind to " + name);
     }
 }
 

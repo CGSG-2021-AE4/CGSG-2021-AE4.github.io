@@ -50,4 +50,7 @@ export class Shader {
                 alert("OOH FUCK");
         });
     }
+    use( rnd ) {
+        rnd.gl.useProgram(this.program);
+    }
 }

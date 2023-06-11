@@ -21,16 +21,7 @@ export class Prim {
             this.mtlName = 'def';
         else
             this.mtlName = newMtlName;
-        var posLoc = rnd.gl.getAttribLocation(this.shader.program, 'in_pos');
-        if (posLoc === -1)
-            console.log(`Can't find "in_pos".`);
-        var normalLoc = rnd.gl.getAttribLocation(this.shader.program, 'in_norm');
-        if (normalLoc === -1)
-            console.log(`Can't find "in_norm".`);
-        var texLoc = rnd.gl.getAttribLocation(this.shader.program, 'in_tex');
-        if (texLoc === -1)  
-            console.log(`Can't find "in_tex".`);
-    
+
         this.primVAO = rnd.gl.createVertexArray();
         rnd.gl.bindVertexArray(this.primVAO);
 
@@ -57,35 +48,46 @@ export class Prim {
 
         // Bind to shader
 
-        rnd.gl.enableVertexAttribArray(posLoc);
-        rnd.gl.vertexAttribPointer(
-            posLoc,  
-            Vertex.pLen(),
-            rnd.gl.FLOAT,
-            false,
-            Vertex.len() * 4,
-            0,
-        );
-
-        rnd.gl.enableVertexAttribArray(normalLoc);
-        rnd.gl.vertexAttribPointer(
-            normalLoc,  
-            Vertex.nLen(),
-            rnd.gl.FLOAT,
-            false,
-            Vertex.len() * 4,
-            Vertex.pLen() * 4,
-        );
-
-        rnd.gl.enableVertexAttribArray(texLoc);
-        rnd.gl.vertexAttribPointer(
-            texLoc,  
-            Vertex.tLen(),
-            rnd.gl.FLOAT,
-            false,
-            Vertex.len() * 4,
-            (Vertex.pLen() + Vertex.nLen()) * 4,
-        );
+        var posLoc = rnd.gl.getAttribLocation(this.shader.program, 'in_pos');
+        if (posLoc != -1)
+        { // console.log(`Can't find "in_pos".`);
+            rnd.gl.enableVertexAttribArray(posLoc);
+            rnd.gl.vertexAttribPointer(
+                posLoc,  
+                Vertex.pLen(),
+                rnd.gl.FLOAT,
+                false,
+                Vertex.len() * 4,
+                0,
+            );  
+        }
+        var normalLoc = rnd.gl.getAttribLocation(this.shader.program, 'in_norm');
+        if (normalLoc != -1)
+        { // console.log(`Can't find "in_norm".`);
+            rnd.gl.enableVertexAttribArray(normalLoc);
+            rnd.gl.vertexAttribPointer(
+                normalLoc,  
+                Vertex.nLen(),
+                rnd.gl.FLOAT,
+                false,
+                Vertex.len() * 4,
+                Vertex.pLen() * 4,
+            );
+        }
+        
+        var texLoc = rnd.gl.getAttribLocation(this.shader.program, 'in_tex');
+        if (texLoc != -1)  
+        { // console.log(`Can't find "in_tex".`);
+            rnd.gl.enableVertexAttribArray(texLoc);
+            rnd.gl.vertexAttribPointer(
+                texLoc,  
+                Vertex.tLen(),
+                rnd.gl.FLOAT,
+                false,
+                Vertex.len() * 4,
+                (Vertex.pLen() + Vertex.nLen()) * 4,
+            );
+        }
     }
 
     
@@ -102,9 +104,15 @@ export class Prim {
         Material.applyFromLib(rnd, this.shader, this.mtlName);
         // matrs world
  
-        rnd.gl.uniformMatrix4fv(rnd.gl.getUniformLocation(this.shader.program, "matrWP"), true, matrWP.M);
-        rnd.gl.uniformMatrix4fv(rnd.gl.getUniformLocation(this.shader.program, "matrVP"), true, camera.matrVP.M);
-        rnd.gl.uniformMatrix4fv(rnd.gl.getUniformLocation(this.shader.program, "matrProj"), true, camera.matrProj.M);
+        let tmpLoc = rnd.gl.getUniformLocation(this.shader.program, "matrWP");
+        if (tmpLoc != -1)
+            rnd.gl.uniformMatrix4fv(tmpLoc, true, matrWP.M);
+        tmpLoc = rnd.gl.getUniformLocation(this.shader.program, "matrVP");
+        if (tmpLoc != -1)
+            rnd.gl.uniformMatrix4fv(tmpLoc, true, camera.matrVP.M);
+        tmpLoc = rnd.gl.getUniformLocation(this.shader.program, "matrProj")
+        if (tmpLoc != -1)
+            rnd.gl.uniformMatrix4fv(tmpLoc, true, camera.matrProj.M);
         
         rnd.gl.drawElements(this.drawType, this.TrCount * 3, rnd.gl.UNSIGNED_INT, 0);
     }
@@ -116,8 +124,13 @@ export class Model {
     primCounter = 0;
 
     constructFromToppology( rnd, newShader, topology ) {
-        this.prims[this.prims.length] = new Prim(rnd, newShader,topology);
+        this.prims[this.prims.length] = new Prim(rnd, newShader, topology);
     }
+
+    constructFromPrim( rnd, prim ) {
+        this.prims[this.prims.length] = prim;
+    }
+
 
     constructEmpty() {
         
@@ -127,6 +140,9 @@ export class Model {
         {
         case 0:
             this.constructEmpty();
+            break;
+        case 2:
+            this.constructFromPrim();
             break;
         case 3:
             this.constructFromToppology(args[0], args[1], args[2]);

@@ -1,13 +1,14 @@
-import * as math from "../math.js";
+import {vec3, matr} from "../math.js";
 import {Ubo, Material} from "./material.js";
 import {Shader} from "./shader.js";
 import {Topology} from "./topology.js";
 import {Model, Prim} from "./prim.js";
 import { Targets } from "./target.js";
+import { Lighting } from "./light.js";
 
-export {Ubo, Material, Shader, Topology, Model, Prim, Targets};
+// export {Ubo, Material, Shader, Topology, Model, Prim, Targets};
 
-export class Camera {
+class Camera {
     matrProj;
     pos;
     at;
@@ -17,6 +18,8 @@ export class Camera {
     dirLen;
     matrVP;
     ubo;
+
+    lighting;
     
     constructor( rnd, newPos, newAt, newUp, enableMovement ) {
         this.matrProj = Camera.createDefMatrProj(rnd.W, rnd.H);
@@ -39,16 +42,16 @@ export class Camera {
 
     static createDefMatrProj( w, h ) {
         var coef = parseFloat(h) / parseFloat(w);
-        return math.matr.frustum(-1, 1, -coef, coef, 1, 1000);
+        return matr.frustum(-1, 1, -coef, coef, 1, 1000);
     }
 
     update() {
         this.dir = this.at.sub(this.pos).normalise();
-        this.right = this.dir.cross(new math.vec3(0, -1, 0)).normalise();
+        this.right = this.dir.cross(new vec3(0, -1, 0)).normalise();
         this.up = this.dir.cross(this.right);
         this.dirLen = this.at.sub(this.pos).length(); 
 
-        this.matrVP = math.matr.view(this.pos, this.at, this.up);
+        this.matrVP = matr.view(this.pos, this.at, this.up);
     }
 
     updateSize( rnd ) {
@@ -69,8 +72,8 @@ export class Camera {
     onMouseMove( e ) {
         if (e.buttons & 1)
         {
-            this.pos = this.at.add(this.pos.sub(this.at).mulMatr( math.matr.rotate(-0.0015 * e.movementX, this.up)));
-            this.pos = this.at.add(this.pos.sub(this.at).mulMatr( math.matr.rotate(0.0015 * e.movementY, this.right)));
+            this.pos = this.at.add(this.pos.sub(this.at).mulMatr( matr.rotate(-0.0015 * e.movementX, this.up)));
+            this.pos = this.at.add(this.pos.sub(this.at).mulMatr( matr.rotate(0.0015 * e.movementY, this.right)));
             this.update();
         }
 
@@ -97,53 +100,54 @@ export class Camera {
     }
 }
 
-export class ShaderSlider4 {
-    ubo;
-    shaderUboName;
-    xID;
-    yID;
-    zID;
-    wID;
-
-    static getSliderHtml( id, label, min, max, step ) {
-        return `<label id="${id}/Lable"> ${label}: <input type="range" id="${id}" min="${min}" max="${max}" step="${step}"/></label><br/>`;
-    }
-
-    constructor( rnd, idForAdd, newShaderUboName, min, max, def ) {
-        this.shaderUboName = newShaderUboName;
-        this.ubo = new Ubo(rnd, 16, 3); // one vec4 
-
-        // add sliders
-
-        var AddObj = document.getElementById(idForAdd);
-
-        if (AddObj == undefined || AddObj == null)
-            allert("fuck");
-        
-        AddObj.innerHTML += ShaderSlider4.getSliderHtml(idForAdd.toString() + "/" + newShaderUboName.toString() + "/Slider1", newShaderUboName.toString() + ".x", min, max, (max - min) * 0.01);
-        AddObj.innerHTML += ShaderSlider4.getSliderHtml(idForAdd.toString() + "/" + newShaderUboName.toString() + "/Slider2", newShaderUboName.toString() + ".y", min, max, (max - min) * 0.01);
-        AddObj.innerHTML += ShaderSlider4.getSliderHtml(idForAdd.toString() + "/" + newShaderUboName.toString() + "/Slider3", newShaderUboName.toString() + ".z", min, max, (max - min) * 0.01);
-        AddObj.innerHTML += ShaderSlider4.getSliderHtml(idForAdd.toString() + "/" + newShaderUboName.toString() + "/Slider4", newShaderUboName.toString() + ".w", min, max, (max - min) * 0.01);
-        this.xID = document.getElementById(idForAdd.toString() + "/" + newShaderUboName.toString() + "/Slider1");
-        this.yID = document.getElementById(idForAdd.toString() + "/" + newShaderUboName.toString() + "/Slider2");
-        this.zID = document.getElementById(idForAdd.toString() + "/" + newShaderUboName.toString() + "/Slider3");
-        this.wID = document.getElementById(idForAdd.toString() + "/" + newShaderUboName.toString() + "/Slider4");
-
-        this.xID.value = def;
-        this.yID.value = def;
-        this.zID.value = def;
-        this.wID.value = def;
-    }
-
-    update( rnd, shader ) {
-        var vec4Value = new Float32Array([parseFloat(this.xID.value),
-                                          parseFloat(this.yID.value),
-                                          parseFloat(this.zID.value),
-                                          parseFloat(this.wID.value)]);
-        this.ubo.submit(rnd, vec4Value);
-        this.ubo.bind(rnd, shader, this.shaderUboName);
-    }
-}
+//class ShaderSlider4 {
+//    ubo;
+//    shaderUboName;
+//    xID;
+//    yID;
+//    zID;
+//    wID;
+//
+//    static getSliderHtml( id, label, min, max, step ) {
+//        return `<label id="${id}/Lable"> ${label}: <input type="range" id="${id}" min="${min}" max="${max}" step="${step}"/></label><br/>`;
+//    }
+//
+//    constructor( rnd, idForAdd, newShaderUboName, min, max, def ) {
+//        this.shaderUboName = newShaderUboName;
+//        this.ubo = new Ubo(rnd, 16, 3); // one vec4 
+//
+//        // add sliders
+//
+//        var AddObj = document.getElementById(idForAdd);
+//
+//        if (AddObj == undefined || AddObj == null)
+//            allert("fuck");
+//        
+//        AddObj.innerHTML += ShaderSlider4.getSliderHtml(idForAdd.toString() + "/" + newShaderUboName.toString() + "/Slider1", newShaderUboName.toString() + ".x", min, max, (max - min) * 0.01);
+//        AddObj.innerHTML += ShaderSlider4.getSliderHtml(idForAdd.toString() + "/" + newShaderUboName.toString() + "/Slider2", newShaderUboName.toString() + ".y", min, max, (max - min) * 0.01);
+//        AddObj.innerHTML += ShaderSlider4.getSliderHtml(idForAdd.toString() + "/" + newShaderUboName.toString() + "/Slider3", newShaderUboName.toString() + ".z", min, max, (max - min) * 0.01);
+//        AddObj.innerHTML += ShaderSlider4.getSliderHtml(idForAdd.toString() + "/" + newShaderUboName.toString() + "/Slider4", newShaderUboName.toString() + ".w", min, max, (max - min) * 0.01);
+//        this.xID = document.getElementById(idForAdd.toString() + "/" + newShaderUboName.toString() + "/Slider1");
+//        this.yID = document.getElementById(idForAdd.toString() + "/" + newShaderUboName.toString() + "/Slider2");
+//        this.zID = document.getElementById(idForAdd.toString() + "/" + newShaderUboName.toString() + "/Slider3");
+//        this.wID = document.getElementById(idForAdd.toString() + "/" + newShaderUboName.toString() + "/Slider4");
+//
+//        this.xID.value = def;
+//        this.yID.value = def;
+//        this.zID.value = def;
+//        this.wID.value = def;
+//    }
+//
+//    update( rnd, shader ) {
+//        var vec4Value = new Float32Array([parseFloat(this.xID.value),
+//                                          parseFloat(this.yID.value),
+//                                          parseFloat(this.zID.value),
+//                                          parseFloat(this.wID.value)]);
+//        this.ubo.submit(rnd, vec4Value);
+//        this.ubo.bind(rnd, shader, this.shaderUboName);
+//    }
+//}
+//
 
 export class Render {
     canvas;
@@ -151,40 +155,109 @@ export class Render {
     W;
     H;
     mtlLib = [];
+    defShader;
+    target;
+    targetShader;
+    targetPrim;
+    
+    camera;
 
-    constructor( canvasName ) {
-        // Init gl
 
-        console.log("InitGL...");
 
-        this.canvas = document.getElementById(canvasName);
+    #initGl() {
         this.gl = this.canvas.getContext("webgl2");
 
         this.canvas.onresize = this.updateSize;
 
-        //this.W =  this.canvas.offsetWidth;\
-
-        //this.updateSize();
-
-        //var canvasStyle = window.getComputedStyle(this.canvas);
         this.resize(this.canvas.clientWidth, this.canvas.clientHeight);
-        //this.canvas.ariaSetSize(300, 300);
-        
+    }
 
+    clearFB() {
         this.gl.clearColor(1, 0.6, 0.8, 1);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+    }
 
+    constructor( canvasName ) {
+        this.canvas = document.getElementById(canvasName);
+        this.#initGl();
+
+        // Def render params
         this.gl.enable(this.gl.DEPTH_TEST);
         //this.gl.enable(this.gl.CULL_FACE);
 
-        // Load def shader
-        Material.addToMtlLib(this, 'def', new Material(this));
-
-
         // Extentions
-        //console.log(this.gl.getSupportedExtensions());
         this.gl.getExtension("EXT_color_buffer_float");
         this.gl.getExtension("OES_texture_float_linear");
+
+    }
+
+    async init() { // Init def values function
+        // Load def shader
+        Material.addToMtlLib(this, 'def', new Material(this));
+        this.defShader = await this.createShader('default_for_target');
+        
+        this.target = new Targets(this);
+
+        this.lighting = new Lighting();
+        await this.lighting.init(this);
+
+        this.camera = new Camera(this, new vec3(10, 10, 10), new vec3(0, 0, 0), new vec3(0, 1, 0), 1); // DEFAULT camera
+    }
+
+    async createShader( name ) {
+        var shader = new Shader();
+
+        await shader.loadShader(this, name);
+        return shader;
+    }
+
+    createModel( ...args ) {
+        switch (args.length) {
+            case 0: // Empty
+                return new Model();
+            case 1: // Load modal with def shader
+                if (typeof(args[0]) == 'string')
+                {
+                    var outM = new Model();
+                    
+                    return outM.load(this, this.defShader, args[0]).then(()=>{ return outM; });
+                }
+                else
+                    if (args[0] instanceof Prim)
+                    return new Model(this, args[0]);
+            case 2: // Load modal with custom shader
+                if (args[0] instanceof Shader && typeof(args[1]) == 'string')
+                //{
+                    var outM = new Model();
+
+                    return outM.load(this, args[0], args[1]).then(()=>{ return outM; });
+                //}
+        }
+    }
+
+    createTopology( ...args ) {
+        switch (args.length) {
+            case 0: // Empty
+                return new Topology([], []);
+            case 2: // Full
+                return new Topology(args[0], args[1]);
+            case 3: // Full with flag
+                return new Topology(args[0], args[1], args[2]);
+        }
+    }
+
+    createPrim( ...args ) {
+        switch (args.length) {
+            case 1:
+                if (args[0] instanceof Topology)
+                    return new Prim(this, defShader, args[0], this.mtlLib['def']);
+            case 2:
+                if (args[0] instanceof Shader && args[1] instanceof Topology)
+                    return new Prim(this, args[0], args[1]);
+            case 3:
+                if (args[0] instanceof Shader && args[1] instanceof Topology && args[2] instanceof Material)
+                    return new Prim(this, args[0], args[1], args[2]);
+        }
     }
 
     resize( newW, newH ) {
@@ -201,6 +274,25 @@ export class Render {
         //this.gl.drawingBufferWidth = this.W; 
         //this.gl.drawingBufferHeight = this.H; 
         //this.gl = this.canvas.getContext("webgl2");
+    }
 
+    drawStack = [];
+
+    drawModel( model, matrW ) {
+        this.drawStack[this.drawStack.length] = [model, matrW];
+    }
+
+    render() {
+        this.camera.updateSize(this);
+
+        // Draw to target
+        this.target.applyFB(this);
+        for (let i = 0; i < this.drawStack.length; i++)
+            this.drawStack[i][0].draw(this, this.camera, this.drawStack[i][1]);
+
+        // Draw to canvas
+        Targets.applyCanvas(this);
+        this.lighting.draw(this, this.camera, this.target);
+        this.drawStack.length = 0;
     }
 }

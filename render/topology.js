@@ -96,6 +96,14 @@ export class Topology {
         //return Topology.setByPosArrayAndColor(p, inds, [1, 0, 1, 1]);
     }
 
+    static createScreenRect() {
+        return new Topology([[-1, -1, 0, 1, 0, 0, 0, 1, 0, 0],
+                            [1,  -1, 0, 1, 0, 0, 0, 1, 1, 0],
+                            [-1,  1, 0, 1, 0, 0, 0, 1, 0, 1],
+                            [1,   1, 0, 1, 0, 0, 0, 1, 1, 1]],
+                            [0, 1, 3, 0, 2, 3], 1)
+    }
+
     static createCube() {
         var a = 0.5 / Math.sqrt(3);
 
