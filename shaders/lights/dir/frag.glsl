@@ -21,9 +21,14 @@ uniform camera {
     vec4 CamAt;
 };
 
-vec3 Shade( vec3 LightDir, vec3 LightColor, vec3 P, vec3 N, vec3 Ka, vec3 Kd, vec3 Ks, float Ph )
+uniform dirLight {
+    vec4 LightDir;
+    vec4 LightColorIntensity;
+};
+
+vec3 Shade( vec3 LightDirection, vec3 LightColor, vec3 P, vec3 N, vec3 Ka, vec3 Kd, vec3 Ks, float Ph )
 {
-  vec3 L = normalize(vec3(LightDir.x, -LightDir.y, LightDir.z));
+  vec3 L = normalize(vec3(LightDirection.x, -LightDirection.y, LightDirection.z));
   vec3 color = vec3(0);
   vec3 V = normalize(P - CamLoc.xyz);
 
@@ -57,16 +62,20 @@ void main() {
     //o_color = vec4(texture(inKa, v_tex).xyz, 1);
 
     if (texture(inNIsShade, texCoords).w > 0.5)
-        o_color = vec4(Shade(vec3(1.0, 1.0, 1.0), vec3(1.0, 1.0, 1.0),
+        o_color = vec4(Shade(LightDir.xyz, LightColorIntensity.xyz,
             texture(inPos, texCoords).xyz,      // Pos
             texture(inNIsShade, texCoords).xyz, // Normal
             texture(inKa, texCoords).xyz,       // Ka
             texture(inKd, texCoords).xyz,       // Kd
             texture(inKsPh, texCoords).xyz,     // Ks
             texture(inKsPh, v_tex).w),      // Ph
-            1);
+            1.0);
     else
-        o_color = vec4(1.0, 1.0, 0.0, 1.0);//o_color = vec4(texture(inColorTrans, texCoords).xyz, 1);
+    {
+        vec2 fTex = vec2(floor(v_tex.x / 0.05), floor(v_tex.y / 0.05));
+        float coef = float(bool((fTex.x * 0.5 - floor(fTex.x * 0.5))) ^^ bool((fTex.y * 0.5 - floor(fTex.y * 0.5))));
+        o_color = vec4(0.25 + coef * 0.5, 0.25 + coef * 0.5, 0.25 + coef * 0.5, 1.0);//o_color = vec4(texture(inColorTrans, texCoords).xyz, 1);
+    }
     
     if (a < 000.0)
         o_color = vec4(texture(inPos, v_tex).rgb, 1);

@@ -92,6 +92,7 @@
                 import {vec3, matr} from "./math.js";
                 
                 import * as render from "./render/render.js";
+                import {DirLight} from "./render/light.js";
     
                 var rnd = new render.Render("mainCanvas");
                 await rnd.init();
@@ -100,6 +101,9 @@
                 var cgsgText = await rnd.createModel("./models/tex_cow/tex_cow.obj");
 
                 var TmpCounter = 0;
+
+                var dirL2 = new DirLight(rnd, [1, 1, 1], [1, 1, 0], 1);
+                var dirL1 = new DirLight(rnd, [-1, -1, 1], [1, 0, 1], 1);
     
                 window.setInterval(()=>{
                     rnd.drawModel(cgsgText, matr.translate(new vec3(0, 0, 0)));

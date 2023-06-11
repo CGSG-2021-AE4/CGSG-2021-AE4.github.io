@@ -123,7 +123,7 @@ export class Targets {
 
         rnd.gl.bindFramebuffer(rnd.gl.FRAMEBUFFER, this.frameBuffer);
 
-        rnd.gl.clearColor(0.3, 0.47, 0.8, 1);
+        rnd.gl.clearColor(0, 0, 0, 0);
         //rnd.gl.clearColor(0, 0, 0, 0);
         rnd.gl.clear(rnd.gl.COLOR_BUFFER_BIT | rnd.gl.DEPTH_BUFFER_BIT);
 
@@ -132,7 +132,7 @@ export class Targets {
 
     static applyCanvas( rnd ) {
         rnd.gl.bindFramebuffer(rnd.gl.FRAMEBUFFER, null);
-        rnd.gl.clearColor(0.30, 0.47, 0.8, 1);   // clear to white
+        rnd.gl.clearColor(0, 0, 0, 0);   // clear to white
         rnd.gl.clear(rnd.gl.COLOR_BUFFER_BIT | rnd.gl.DEPTH_BUFFER_BIT);
     }
 

@@ -5,6 +5,7 @@ import {Texture} from "./texture.js";
 1 - camera
 2 - test 
 3 - sliders 
+4 - lights
 */
 export class Ubo {
     buf;
