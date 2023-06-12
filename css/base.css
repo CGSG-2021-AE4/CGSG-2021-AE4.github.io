@@ -40,6 +40,10 @@ label {
     align-items: flex-start;
 }
 
+a {
+    color: greenyellow;
+}
+
 /* Button */
 
 input[type=button] {

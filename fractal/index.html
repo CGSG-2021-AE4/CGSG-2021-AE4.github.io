@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<head>
+        <meta charset = "UTF_8"/>
+        <title>CGSG</title>
+        <link rel="stylesheet" href="style.css"/>
+        <script type="text/javascript" src="./ui.js"></script>
+    </head>
+    <body>
+      <header>
+        <h1>Hello my dear friend</h1>
+        <p>On this page you can only look at my fucking mandelbrot fractal</p>        
+      </header>
+
+      <div class="toolbar">
+        <div class="value">
+          <label>R color shift:</label>
+          <input type="range" class="range" name="R color shift"/> <br/>
+        </div>
+        G color shift: <input type="range" class="range" name="G color shift"/> <br/>
+        B color shift: <input type="range" class="range" name="B color shift"/> <br/>
+      </div>
+      
+      <input id="showMainSectionButton" type="button" class="button" value="button" onclick="OnPushClick(document.getElementById('showMainSectionButton'))"/>
+      <section class="mainSection" id="mainSection">
+        <canvas id="canvas" width="1600" height="900">
+          <script type="module">
+            import {Init} from "./main_gl.js";
+            Init();
+          </script>
+        </canvas>
+        <article>
+          <h1>Descrition</h1>
+          <p>
+            All content on this site is in English
+            and is an interesting and educational
+            resource for those who want to understand
+            the nature of fractals and experience their beauty.
+          </p>
+        </article>
+      </section>
+      <section class="main-section">
+        <article>
+          <h1>  </h1>
+          <p>
+            aw;elkfja;slkdjf;laksjdfljasdl;fjalsdkjf
+            asjldkflasjd;flajsdf
+          </p>
+        </article>
+        <article>
+          <h1> Column 2 </h1>
+          <p>
+            asfjl;aksdjgl;aksdjg;sdjfgl;ksjdfgljsd
+            kajsdfhaskdfaskdfasdkf
+          </p>
+        </article>
+        <article>
+          <h1> Column 3 </h1>
+          <p>
+            aw;elkfja;slkdjf;laksjdfljasdl;fjalsdkasdfashdfjkasdhf
+            asjldfhlaksjdhflaksjhdfjf
+          </p>
+        </article>
+      </section>
+      <footer>
+      </footer>
+    </body>
+</html>

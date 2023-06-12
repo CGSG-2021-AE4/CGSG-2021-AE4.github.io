@@ -21,14 +21,14 @@ uniform camera {
     vec4 CamAt;
 };
 
-uniform dirLight {
-    vec4 LightDir;
+uniform pointLight {
+    vec4 LightPos;
     vec4 LightColorIntensity;
 };
 
 vec3 Shade( vec3 LightDirection, vec3 LightColor, vec3 P, vec3 N, vec3 Ka, vec3 Kd, vec3 Ks, float Ph )
 {
-  vec3 L = normalize(vec3(LightDirection.x, -LightDirection.y, LightDirection.z));
+  vec3 L = normalize(vec3(LightDirection.x, LightDirection.y, LightDirection.z));
   vec3 color = vec3(0);
   vec3 V = normalize(P - CamLoc.xyz);
 
@@ -51,25 +51,27 @@ vec3 Shade( vec3 LightDirection, vec3 LightColor, vec3 P, vec3 N, vec3 Ka, vec3 
   return color;                     
 }
 
-void main() {
-//    o_color = vec4(0.0, 1.0, 1.0, 1.0);
+float len2( vec3 R ) {
+    return R.x * R.x + R.y * R.y + R.z * R.z;
+}
 
-    
+void main() {
     float a = 0.5;
 
     vec2 texCoords = v_tex;
 
     //o_color = vec4(texture(inKa, v_tex).xyz, 1);
+    vec3 pos = texture(inPos, texCoords).xyz;
 
     if (texture(inPos, texCoords).w != 0.0)
         if (texture(inNIsShade, texCoords).w == 1.0)
-            o_color = vec4(Shade(LightDir.xyz, LightColorIntensity.xyz,
-                texture(inPos, texCoords).xyz,      // Pos
+            o_color = vec4(Shade(-normalize(pos - LightPos.xyz), LightColorIntensity.xyz,
+                pos,      // Pos
                 texture(inNIsShade, texCoords).xyz, // Normal
                 texture(inKa, texCoords).xyz,       // Ka
                 texture(inKd, texCoords).xyz,       // Kd
                 texture(inKsPh, texCoords).xyz,     // Ks
-                texture(inKsPh, v_tex).w) * LightColorIntensity.w,      // Ph
+                texture(inKsPh, v_tex).w) / len2(pos - LightPos.xyz) * LightColorIntensity.w,      // Ph
                 1.0);
         else
             vec4(texture(inColorTrans, texCoords).rgb, 1.0);

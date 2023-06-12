@@ -142,7 +142,7 @@ export class Model {
             this.constructEmpty();
             break;
         case 2:
-            this.constructFromPrim();
+            this.constructFromPrim(args[0], args[1]);
             break;
         case 3:
             this.constructFromToppology(args[0], args[1], args[2]);

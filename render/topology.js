@@ -121,7 +121,7 @@ export class Topology {
         var v = [];
 
         for (var i = 0; i < p.length; i++)
-            v[i] = p[i].concat(p[i]).concat([1, 0, 0, 1, 0, 0]);
+            v[i] = p[i].concat(p[i]).concat([0, 0]);
 
         var inds = [0, 1, 2, // Bottom Face
                     0, 2, 3,

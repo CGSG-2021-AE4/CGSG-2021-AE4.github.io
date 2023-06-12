@@ -84,6 +84,7 @@
                 - Materials<br/>
                 - Костыль lighting<br/>
                 Also I have beautiful css and several sliders at right bottom.<br/>
+                <a href="./fractal/index.html"> FRACTAL </a>
                 </p>
         </div>
         <div class="section">
@@ -92,25 +93,33 @@
                 import {vec3, matr} from "./math.js";
                 
                 import * as render from "./render/render.js";
-                import {DirLight} from "./render/light.js";
+                import {DirLight, PointLight} from "./render/light.js";
     
                 var rnd = new render.Render("mainCanvas");
                 await rnd.init();
     
                 var cgsgTor = await rnd.createModel("./models/cgsg_tor2.obj");
-                var cgsgText = await rnd.createModel("./models/tex_cow/tex_cow.obj");
+                var cgsgText = await rnd.createModel("./models/tex_cow_hr/cow.obj");
 
-                var TmpCounter = 0;
+                var frameCounter = 0;
 
-                var dirL2 = new DirLight(rnd, [1, 1, 1], [1, 1, 0], 1);
-                var dirL1 = new DirLight(rnd, [-1, -1, 1], [1, 0, 1], 1);
+                //var dirL2 = new DirLight(rnd, [1, 1, 1], [1, 1, 0], 1);
+                //var dirL1 = new DirLight(rnd, [-1, -1, 1], [1, 0, 1], 1);
+
+                var PL1 = new PointLight(rnd, [0, 0, 0], [0, 1, 0], 40);
+                var PL2 = new PointLight(rnd, [0, 0, 0], [1, 0, 0], 40);
+                var PL3 = new PointLight(rnd, [0, 0, 0], [0, 0, 1], 20);
     
                 window.setInterval(()=>{
+                    PL1.pos = [3 + 15 * Math.sin(frameCounter / 100), 7 + 3 * Math.sin(frameCounter / 37), 7 * Math.cos(frameCounter / 100)];
+                    PL2.pos = [0, 10 * Math.sin(frameCounter / 60) + 7, 10 * Math.cos(frameCounter / 60)];
+                    PL3.pos = [15 * Math.sin(frameCounter / 72), 15, 15 * Math.cos(frameCounter / 137)];
+                    
                     rnd.drawModel(cgsgText, matr.translate(new vec3(0, 0, 0)));
 
                     rnd.render();
 
-                    TmpCounter++;
+                    frameCounter++;
                 }, 10);
               </script>
             </canvas>

@@ -36,7 +36,7 @@ uniform testSliders {
 
 void main() {
     outPos = v_pos;
-    outNIsShade = vec4(v_normal, 1);
+    outNIsShade = vec4(normalize(v_normal), 1);
     outKa = Ka;
     if (isTexKd)
         outKd = vec4(texture(texKd, v_tex).xyz, 1);

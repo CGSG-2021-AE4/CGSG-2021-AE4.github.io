@@ -250,10 +250,12 @@ export class Render {
         switch (args.length) {
             case 1:
                 if (args[0] instanceof Topology)
-                    return new Prim(this, defShader, args[0], this.mtlLib['def']);
+                    return new Prim(this, this.defShader, args[0]);
             case 2:
                 if (args[0] instanceof Shader && args[1] instanceof Topology)
                     return new Prim(this, args[0], args[1]);
+                else if (args[0] instanceof Topology && args[1] instanceof Material)
+                    return new Prim(this, this.defShader, args[0], args[1]);
             case 3:
                 if (args[0] instanceof Shader && args[1] instanceof Topology && args[2] instanceof Material)
                     return new Prim(this, args[0], args[1], args[2]);
@@ -285,11 +287,13 @@ export class Render {
     render() {
         this.camera.updateSize(this);
 
+        this.lighting.drawDebug(this, this.camera);
+
         // Draw to target
         this.target.applyFB(this);
         for (let i = 0; i < this.drawStack.length; i++)
             this.drawStack[i][0].draw(this, this.camera, this.drawStack[i][1]);
-
+        
         // Draw to canvas
         Targets.applyCanvas(this);
         this.lighting.draw(this, this.camera, this.target);

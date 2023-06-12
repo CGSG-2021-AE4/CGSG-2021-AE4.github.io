@@ -1,0 +1,142 @@
+@font-face {
+    font-family: "Monomaniac";
+    src: url("./fonts/MonomaniacOne-Regular.ttf");
+}
+@font-face {
+    font-family: "Bungee";
+    src: url("./fonts/Bungee-Regular.ttf");
+}
+@font-face {
+    font-family: "Chokokutai";
+    src: url("./fonts/Chokokutai-Regular.ttf");
+}
+@font-face {
+    font-family: "PressStart2P";
+    src: url("./fonts/PressStart2P-Regular.ttf");
+}
+@font-face {
+    font-family: "IBMPlexMono-SemiBold";
+    src: url("./fonts/IBMPlexMono-SemiBold.ttf");
+}
+
+
+:root {
+    
+
+/*
+    --Back: ;
+    --White: 
+    --Yellow:
+    --Orange:
+    --FrameColor: rgb(0, 82, 41);
+    --TextColor: rgb(37, 0, 0);
+    --TitleColor: rgb(1, 0, 27);
+    --UpperBack: rgb(140, 226, 162); 
+    --LowerBack: rgb(12, 0, 0)
+    */
+
+    font-family: "IBMPlexMono-SemiBold";
+    font-weight: lighter;
+    letter-spacing: 1px;
+
+}
+
+:root { /* Color theme */
+    --bg-color: #0d1c1c;
+    --main-color: #f0e800;
+    --sub-color: #f60;
+    --sub-alt-color: #9c9191;
+    --text-color: #fff;
+    --error-color: red;
+
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+p {
+    color: var(--text-color);
+    padding-left: 10px;
+}
+
+h1 {
+    color: var(--main-color);
+    margin-left: 30px;
+}
+canvas {
+    border:2px dashed var(--sub-color);
+    border-radius: 4px;
+    margin: 5px;
+}
+
+/* Page */
+
+section {
+    display: flex;
+}
+article {
+    flex: 1;
+    border:2px dashed var(--sub-color);
+    border-radius: 4px;
+    margin: 5px;
+}
+section.main-section {
+    flex-direction: row;
+}
+
+header {
+    border:2px dashed var(--sub-color);
+    border-radius: 4px;
+    margin: 5px;
+}
+
+.sideBox {
+    border: 2px solid var(--sub-color);
+    border-radius: 4px;
+    margin: 5px;
+}
+
+/* Button */
+
+.button {
+    margin: 5px;
+    border-radius: 15px;
+    padding-inline: 15px 15px;
+    border: 3px solid var(--sub-alt-color);
+    /*box-sizing: border-box;*/
+    font-size: 150%;
+    
+    transition: background 0.2s, bolder 0.2s, color 0.2s;
+
+    background-color: var(--sub-alt-color);
+    color: white;
+}
+
+.pushed {
+    background-color: var(--main-color);
+    border-color: var(--main-color);
+    color: black;
+}
+
+.button:hover {
+    background-color: white;
+    
+    color: black;
+}
+
+.button:active {
+    background-color: var(--sub-color); 
+    border-color: white;
+    color: black;
+}
+
+/* Range */
+
+.range::-webkit {
+    border: 1px solid #000000;
+    border-radius: 3px;
+    background: #ffffff;
+    cursor: pointer;
+    margin-top: -14px; /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d; /* Add cool effects to your sliders! */
+
+}
