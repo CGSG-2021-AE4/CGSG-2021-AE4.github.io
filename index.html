@@ -18,35 +18,24 @@
                 <canvas id="logoCanvas" width=200 height=100></canvas>
                 <h1 class="title">cgsg ae4 site?</h1>
             </div>
-            <!--<script type="module">               // Logo render
-                import {vec3, matr} from "./math.js";
-                //import * as PNG from "./node_modules/pngjs/browser.js";
-                //import pngjs from "./package.json";
-                //import * as PNG from 'pngjs';
-                
-                import * as render from "./render/render.js";
-
-                //var PNG = require("pngjs");
+            <script type="module">               // Logo render
+                import Render from "./bundle.js";
+                import {DirLight, PointLight, matr, vec3} from "./bundle.js";
     
-                var logo_rnd = new render.Render("logoCanvas");
+                var logo_rnd = new Render("logoCanvas");
+                await logo_rnd.init();
+    
                 
                 var logo_defCamPos = new vec3(0.4374, 0.827, 3.30);
-    
-                var logo_camera = new render.Camera(logo_rnd,
-                logo_defCamPos, new vec3(0.4, -0.1, 0), new vec3(0, 1, 0), 0);
-    
+                logo_rnd.camera.at = new vec3(0.4, 0.1, 0);
+
                 // Shader
-                var logo_shader = new render.Shader();
-                
-                await logo_shader.loadShader(logo_rnd, 'logo');
+                //var logo_shader = await logo_rnd.createShader('logo');
                 
                 // Topology
     
-                var logo_cgsgTor = new render.Model(logo_rnd, logo_shader, render.Topology.createCube());
-                var logo_cgsgText = new render.Model(logo_rnd, logo_shader, render.Topology.createCube());
-    
-                await logo_cgsgTor.load(logo_rnd, logo_shader, "./models/cgsg_tor.obj");
-                await logo_cgsgText.load(logo_rnd, logo_shader, "./models/cgsg_text.obj");
+                var logo_cgsgTor = await logo_rnd.createModel("./models/cgsg_tor.obj");
+                var logo_cgsgText = await logo_rnd.createModel("./models/cgsg_text.obj");
 
                 logo_cgsgTor.prims.forEach((elem)=>{
                     elem.drawType = logo_rnd.gl.LINE_STRIP;
@@ -64,18 +53,25 @@
     
                 var logo_TmpCounter = 0;
     
+                 
+                var logo_PL1 = new PointLight(logo_rnd, [0, 0, 0], [0.7, 1, 0.7], 30);
+                var logo_PL2 = new PointLight(logo_rnd, [0, 0, 0], [1, 0.6, 0.6], 30);
+
                 // UBO
                 window.setInterval((e)=>{
-                    logo_camera.updateSize(logo_rnd);
-                    logo_camera.pos = logo_camera.pos.add(cameraTargetPos.sub(logo_camera.pos).mulNum(0.1));
-                    logo_camera.update();
-                    logo_cgsgTor.draw(logo_rnd, logo_camera, matr.rotateY(0.007 * logo_TmpCounter).mul(matr.rotateX(-3.14 / 4)));
-                    logo_cgsgTor.draw(logo_rnd, logo_camera, matr.rotateY(0.007 * logo_TmpCounter).mul(matr.rotateX(3.14 / 4)).mul(matr.translate(new vec3(1, 0, 0))));
+                    logo_PL1.pos = [5 * Math.sin(logo_TmpCounter / 100), 5, 5 * Math.cos(logo_TmpCounter / 100)];
+                    logo_PL2.pos = [-5 * Math.sin(logo_TmpCounter / 100), -5, -5 * Math.cos(logo_TmpCounter / 100)];
+                    
+                    logo_rnd.camera.pos = logo_rnd.camera.pos.add(cameraTargetPos.sub(logo_rnd.camera.pos).mulNum(0.1));
+                    logo_rnd.camera.update();
+                    logo_rnd.drawModel(logo_cgsgTor, matr.rotateY(0.007 * logo_TmpCounter).mul(matr.rotateX(-3.14 / 4)));
+                    logo_rnd.drawModel(logo_cgsgTor, matr.rotateY(0.007 * logo_TmpCounter).mul(matr.rotateX(3.14 / 4)).mul(matr.translate(new vec3(1, 0, 0))));
     
-                    logo_cgsgText.draw(logo_rnd, logo_camera, matr.rotateX(3.14 / 2).mul(matr.translate(new vec3(0.5, 0, 1))));
+                    logo_rnd.drawModel(logo_cgsgText, matr.rotateX(3.14 / 2).mul(matr.translate(new vec3(0.5, 0, 1))));
+                    logo_rnd.render();
                     logo_TmpCounter++;
                 }, 10);
-              </script>-->
+              </script>
             <p class="description">Now this site has only one project.
                 I'm going to add a project selector soon.
                 At the moment this page has two canvases, each has:<br/>
@@ -90,37 +86,58 @@
         <div class="section">
             <canvas id="mainCanvas">
               <script type="module">
-                import {vec3, matr} from "./math.js";
-                
-                import * as render from "./render/render.js";
-                import {DirLight, PointLight} from "./render/light.js";
+                //import {vec3, matr} from "./math/math.js";
+                //
+                //import * as render from "./render/render.js";
+                //import {DirLight, PointLight} from "./render/light.js";
+                import Render from "./bundle.js";
+                import {DirLight, PointLight, matr, vec3} from "./bundle.js";
     
-                var rnd = new render.Render("mainCanvas");
+                var rnd = new Render("mainCanvas");
                 await rnd.init();
     
-                var cgsgTor = await rnd.createModel("./models/cgsg_tor2.obj");
-                var cgsgText = await rnd.createModel("./models/tex_cow_hr/cow.obj");
-
+                //var cgsgTor = await rnd.createModel("./models/cgsg_tor2.obj");
+                var isLoaded = false;
+                var loadingM = await rnd.createModel("./models/loading.obj");
+                rnd.camera.isShared = false;
+                rnd.camera.pos = new vec3(0, 0, 20);
+                rnd.camera.update();
+                
                 var frameCounter = 0;
-
+                
                 //var dirL2 = new DirLight(rnd, [1, 1, 1], [1, 1, 0], 1);
                 //var dirL1 = new DirLight(rnd, [-1, -1, 1], [1, 0, 1], 1);
-
+                
                 var PL1 = new PointLight(rnd, [0, 0, 0], [0, 1, 0], 40);
                 var PL2 = new PointLight(rnd, [0, 0, 0], [1, 0, 0], 40);
                 var PL3 = new PointLight(rnd, [0, 0, 0], [0, 0, 1], 20);
-    
+                
                 window.setInterval(()=>{
-                    PL1.pos = [3 + 15 * Math.sin(frameCounter / 100), 7 + 3 * Math.sin(frameCounter / 37), 7 * Math.cos(frameCounter / 100)];
-                    PL2.pos = [0, 10 * Math.sin(frameCounter / 60) + 7, 10 * Math.cos(frameCounter / 60)];
-                    PL3.pos = [15 * Math.sin(frameCounter / 72), 15, 15 * Math.cos(frameCounter / 137)];
-                    
-                    rnd.drawModel(cgsgText, matr.translate(new vec3(0, 0, 0)));
-
+                    if (isLoaded)
+                    {
+                        // MAIN SCENE
+                        PL1.pos = [3 + 15 * Math.sin(frameCounter / 100), 7 + 3 * Math.sin(frameCounter / 37), 7 * Math.cos(frameCounter / 100)];
+                        PL2.pos = [0, 10 * Math.sin(frameCounter / 60) + 7, 10 * Math.cos(frameCounter / 60)];
+                        PL3.pos = [15 * Math.sin(frameCounter / 72), 15, 15 * Math.cos(frameCounter / 137)];
+                        rnd.drawModel(cgsgText, matr.translate(new vec3(0, 0, 0)));
+                    }
+                    else
+                    {
+                        // LOADING SCENE
+                        PL1.pos = [10 * Math.sin(frameCounter / 100), 10 * Math.cos(frameCounter / 70), 5];
+                        PL2.pos = [-10 * Math.sin(frameCounter / 80), 10 * Math.cos(frameCounter / 100), 5];
+                        PL3.pos = [10 * Math.sin(frameCounter / 90), -10 * Math.cos(frameCounter / 100), 5];
+                        rnd.drawModel(loadingM, matr.rotateX(3.14 / 2).mul(matr.rotateZ(frameCounter * 0.01)));
+                    }
                     rnd.render();
-
+                    
                     frameCounter++;
                 }, 10);
+                
+                var cgsgText = await rnd.createModel("./models/tex_cow_hr/cow.obj");
+                isLoaded = true;
+                rnd.camera.isShared = true;
+
               </script>
             </canvas>
             <div class="article">

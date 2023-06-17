@@ -1,10 +1,12 @@
-import {vec3, matr} from "../math.js";
+import {vec3, matr} from "../math/math.js";
 import {Ubo, Material} from "./material.js";
 import {Shader} from "./shader.js";
 import {Topology} from "./topology.js";
 import {Model, Prim} from "./prim.js";
 import { Targets } from "./target.js";
-import { Lighting } from "./light.js";
+import { Lighting, DirLight, PointLight } from "./light.js";
+
+export { DirLight, PointLight, vec3, matr };
 
 // export {Ubo, Material, Shader, Topology, Model, Prim, Targets};
 
@@ -20,6 +22,7 @@ class Camera {
     ubo;
 
     lighting;
+    isShared = true;
     
     constructor( rnd, newPos, newAt, newUp, enableMovement ) {
         this.matrProj = Camera.createDefMatrProj(rnd.W, rnd.H);
@@ -28,13 +31,10 @@ class Camera {
         this.up = newUp;
         this.update();
 
-        // Making callbacks
-        if (enableMovement)
-        {
-            rnd.canvas.onmousemove = (e)=>{this.onMouseMove(e)};
-            rnd.canvas.onwheel = (e)=>{this.onMouseWheel(e)};
-            rnd.canvas.oncontextmenu = ()=>{return false;};
-        }
+        this.isShared = enableMovement;
+        rnd.canvas.onmousemove = (e)=>{this.onMouseMove(e)};
+        rnd.canvas.onwheel = (e)=>{this.onMouseWheel(e)};
+        rnd.canvas.oncontextmenu = ()=>{return false;};
         
         // Ubo init
         this.ubo = new Ubo(rnd, 4 * 4 * 2, 1);
@@ -70,6 +70,9 @@ class Camera {
     } 
 
     onMouseMove( e ) {
+        if (!this.isShared)
+            return;
+
         if (e.buttons & 1)
         {
             this.pos = this.at.add(this.pos.sub(this.at).mulMatr( matr.rotate(-0.0015 * e.movementX, this.up)));
@@ -93,8 +96,11 @@ class Camera {
         
     }
 
-    onMouseWheel(e) {
-        this.pos = this.at.add(this.pos.sub(this.at).mulNum(Math.pow(1.1, e.deltaY * 0.01)))
+    onMouseWheel( e ) {
+        if (!this.isShared)
+            return;
+
+        this.pos = this.at.add(this.pos.sub(this.at).mulNum(Math.pow(1.1, e.deltaY * 0.01)));
         this.update();
         e.preventDefault();
     }
@@ -149,7 +155,7 @@ class Camera {
 //}
 //
 
-export class Render {
+export default class Render {
     canvas;
     gl;
     W;
@@ -161,8 +167,7 @@ export class Render {
     targetPrim;
     
     camera;
-
-
+    
 
     #initGl() {
         this.gl = this.canvas.getContext("webgl2");
@@ -178,6 +183,12 @@ export class Render {
     }
 
     constructor( canvasName ) {
+        //
+        this.DirLight = DirLight;
+        //
+        this.PointLight = PointLight;
+    
+        
         this.canvas = document.getElementById(canvasName);
         this.#initGl();
 
@@ -287,7 +298,7 @@ export class Render {
     render() {
         this.camera.updateSize(this);
 
-        this.lighting.drawDebug(this, this.camera);
+        //this.lighting.drawDebug(this, this.camera);
 
         // Draw to target
         this.target.applyFB(this);

@@ -1,7 +1,7 @@
 import { Texture } from "./texture.js";
 import { Topology } from "./topology.js";
 import { Prim } from "./prim.js";
-import { vec3, matr } from "../math.js";
+import { vec3, matr } from "../math/math.js";
 
 export class Targets {
     frameBuffer;

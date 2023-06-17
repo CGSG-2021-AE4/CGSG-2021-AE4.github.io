@@ -1,5 +1,5 @@
 import { Topology } from "./topology.js";
-import { vec3, matr } from "../math.js";
+import { vec3, matr } from "../math/math.js";
 import { Ubo } from "./material.js";
 
 export class Lighting { 
